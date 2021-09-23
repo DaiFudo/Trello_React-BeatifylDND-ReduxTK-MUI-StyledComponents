@@ -6,7 +6,7 @@ const Space: React.FC = () => {
     <Container>
       <Wrapper>
         <List>
-          <Card component="a">Text</Card>
+          <Card component="a">Title</Card>
         </List>
       </Wrapper>
     </Container>
