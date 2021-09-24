@@ -27,6 +27,7 @@ export const List = styled(Box)({
   fontSize: "bold",
   margin: "10px",
   display: "flex",
+  flexDirection: "column",
   width: "102px",
   height: "100px",
   background: "grey",
@@ -42,4 +43,27 @@ export const List = styled(Box)({
 export const Card = styled(Box)({
   padding: "5px",
   display: "flex",
+});
+export const AddCard = styled(Box)({
+  "&:hover": {
+    borderRadius: "5px",
+    background:
+      "rgb(237,60,215) linear-gradient(214deg, rgba(237,60,215,1) 20%, rgba(82,41,249,1) 96%)",
+  },
+});
+export const TextAddCard = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  fontSize: "20px",
+  margin: "0 auto",
+});
+
+export const ControlForm = styled(FormControl)({
+  borderRadius: "5px",
+  display: "flex",
+  margin: "0 auto",
+  width: "93px",
+});
+export const InputForm = styled(TextField)({
+  marginTop: "10px",
 });
