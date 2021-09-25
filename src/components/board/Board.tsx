@@ -15,6 +15,10 @@ import {
   DeleteIcon,
 } from "./styles";
 
+const CreateNewCard = async (e: any) => {
+  console.log(e.target);
+};
+
 const Board: React.FC = () => {
   return (
     <Container>
@@ -42,7 +46,7 @@ const Board: React.FC = () => {
             </List>
           </Card>
 
-          <AddCard>
+          <AddCard onClick={CreateNewCard}>
             <List>
               <TextAddCard>Add Card</TextAddCard>
             </List>

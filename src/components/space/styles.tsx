@@ -40,15 +40,21 @@ export const List = styled(Box)({
     transition: "all 1s ease",
   },
 });
-export const Card = styled(Box)({
+export const Items = styled(Box)({});
+export const Title = styled(Box)({
   padding: "5px",
   display: "flex",
 });
 export const AddCard = styled(Box)({
+  transition: "all 1s ease",
   "&:hover": {
     borderRadius: "5px",
     background:
       "rgb(237,60,215) linear-gradient(214deg, rgba(237,60,215,1) 20%, rgba(82,41,249,1) 96%)",
+    transition: "all 1s ease",
+  },
+  "&:after": {
+    transition: "all 1s ease",
   },
 });
 export const TextAddCard = styled(Box)({

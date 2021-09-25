@@ -4,17 +4,25 @@ import React, { useState } from "react";
 
 import {
   List,
-  Card,
   Container,
   Wrapper,
   AddCard,
   TextAddCard,
   ControlForm,
   InputForm,
+  Items,
+  Title,
 } from "./styles";
 
-const CreateNewCard = async (e: any) => {
-  console.log(e.target.value);
+const ViewBoard = async (e: any) => {
+  console.log(e);
+};
+const CreateNewSpace = async (e: any) => {
+  console.log(e.target);
+};
+
+const InputHandlerSpace = async (e: any) => {
+  console.log(e, "this input");
 };
 
 const Space: React.FC = () => {
@@ -23,12 +31,14 @@ const Space: React.FC = () => {
   return (
     <Container>
       <Wrapper>
-        <List>
-          <Card component="span">Title</Card>
+        <List className="Card">
+          <Title onClick={ViewBoard} component="span">
+            Title
+          </Title>
         </List>
         <AddCard>
           <List>
-            <TextAddCard onClick={CreateNewCard} component="span">
+            <TextAddCard onClick={CreateNewSpace} component="span">
               Add Card
             </TextAddCard>
             <ControlForm>
@@ -37,6 +47,8 @@ const Space: React.FC = () => {
                 label="Call me"
                 variant="filled"
                 autoComplete="off"
+                type="text"
+                onChange={(e) => InputHandlerSpace(e.target.value)}
               />
             </ControlForm>
           </List>
