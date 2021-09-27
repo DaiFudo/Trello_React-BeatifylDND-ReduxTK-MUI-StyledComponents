@@ -23,7 +23,7 @@ export const Wrapper = styled(Box)({
   background: "white",
   borderRadius: "5px",
 });
-export const List = styled(Box)({
+export const Item = styled(Box)({
   fontSize: "bold",
   margin: "10px",
   display: "flex",
@@ -40,7 +40,9 @@ export const List = styled(Box)({
     transition: "all 1s ease",
   },
 });
-export const Items = styled(Box)({});
+export const List = styled(Box)({
+  display: "flex",
+});
 export const Title = styled(Box)({
   padding: "5px",
   display: "flex",
