@@ -62,7 +62,7 @@ export const AddCard = styled(Box)({
 export const TextAddCard = styled(Box)({
   display: "flex",
   alignItems: "center",
-  fontSize: "20px",
+  fontSize: "15px",
   margin: "0 auto",
 });
 

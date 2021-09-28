@@ -1,6 +1,6 @@
 import { InputProps } from "@material-ui/core";
 import { TargetElement } from "@testing-library/user-event";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Item,
@@ -11,57 +11,64 @@ import {
   TextAddCard,
   ControlForm,
   InputForm,
-  //Items,
   Title,
 } from "./styles";
 
 interface Cards {
   title?: string;
+  space?: [];
 }
-const ViewBoard = async (e: any) => {
-  console.log(e);
-};
+interface ItemConf{
+  title: string;
+}
 
-const CreateNewSpace = async (e: any) => {
-  console.log(e.target);
+const OpenBoard = async (e: any) => {
+  console.log(e, "OpenBoard");
 };
 
 const Space: React.FC<Cards> = () => {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [space, setSpace] = useState<string[]>([]);
+  useEffect(() => {});
 
-  const HandlerNewCardTitle = async (e: any) => {
-    setTitle(e);
-    console.log(setTitle, "this setTitle");
+  const SubmitNewCard = async (e: any) => {
+    e.preventDefault();
+    setSpace([...space, title]);
+    console.log("hi");
   };
 
-  console.log(title);
+  const ListItems = () => {
+    return space.map((item) => {
+      console.log(item)
+      <Wrapper>
+        <List>
+          <Item id={item.title} onClick={OpenBoard}>
+            <Title component="span">{item.title}</Title>
+          </Item>
+        </List>
+      </Wrapper>;
+    });
+  };
+
   return (
     <Container>
       <Wrapper>
-        <List>
-          <Item className="Card">
-            <Title onClick={ViewBoard} component="span">
-              Title
-            </Title>
+        {ListItems}
+        <AddCard>
+          <Item onClick={(e) => SubmitNewCard(e)}>
+            <TextAddCard component="span">Add Card</TextAddCard>
+            <ControlForm className="CF">
+              <InputForm
+                id="filled-basic"
+                label="Call me"
+                variant="filled"
+                autoComplete="off"
+                type="text"
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </ControlForm>
           </Item>
-          <AddCard>
-            <Item>
-              <TextAddCard onClick={CreateNewSpace} component="span">
-                Add Card
-              </TextAddCard>
-              <ControlForm>
-                <InputForm
-                  id="filled-basic"
-                  label="Call me"
-                  variant="filled"
-                  autoComplete="off"
-                  type="text"
-                  onChange={(e) => HandlerNewCardTitle(e.target.value)}
-                />
-              </ControlForm>
-            </Item>
-          </AddCard>
-        </List>
+        </AddCard>
       </Wrapper>
     </Container>
   );
