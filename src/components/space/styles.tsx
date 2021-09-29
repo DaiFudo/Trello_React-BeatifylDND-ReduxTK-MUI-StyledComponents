@@ -42,6 +42,7 @@ export const Item = styled(Box)({
 });
 export const List = styled(Box)({
   display: "flex",
+  flexWrap: "wrap",
 });
 export const Title = styled(Box)({
   padding: "5px",
@@ -74,4 +75,5 @@ export const ControlForm = styled(FormControl)({
 });
 export const InputForm = styled(TextField)({
   marginTop: "10px",
+  zIndex: 3,
 });

@@ -1,6 +1,7 @@
-import { InputProps } from "@material-ui/core";
-import { TargetElement } from "@testing-library/user-event";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { BrowserRouter, Link, useHistory } from "react-router-dom";
+
+import { v4 as uuidv4 } from "uuid";
 
 import {
   Item,
@@ -18,53 +19,54 @@ interface Cards {
   title?: string;
   space?: [];
 }
-interface ItemConf{
-  title: string;
-}
-
-const OpenBoard = async (e: any) => {
-  console.log(e, "OpenBoard");
-};
 
 const Space: React.FC<Cards> = () => {
   const [title, setTitle] = useState<string>("");
-  const [space, setSpace] = useState<string[]>([]);
-  useEffect(() => {});
+  const [space, setSpace] = useState<{ title: string; id: string }[]>([]);
 
-  const SubmitNewCard = async (e: any) => {
-    e.preventDefault();
-    setSpace([...space, title]);
-    console.log("hi");
+  const history = useHistory();
+
+  const OpenBoard = (item: any) => {
+    if (item.id) {
+      return history.push(`/Workboard/${item.id}`);
+    }
   };
-
+  const handleKeyDownInput = async (e: any) => {
+    if (e.key === "Enter" && title !== "") {
+      let arr = space;
+      arr.push({ title: title, id: uuidv4() });
+      setSpace(arr);
+      setTitle("");
+    }
+  };
   const ListItems = () => {
     return space.map((item) => {
-      console.log(item)
-      <Wrapper>
-        <List>
-          <Item id={item.title} onClick={OpenBoard}>
+      if (item.title !== "") {
+        return (
+          <Item key={item.id} onClick={() => OpenBoard(item)}>
             <Title component="span">{item.title}</Title>
+            <Link to={`/workboard/${item.id}`}></Link>
           </Item>
-        </List>
-      </Wrapper>;
+        );
+      }
     });
   };
 
   return (
     <Container>
       <Wrapper>
-        {ListItems}
+        <List>{space.length > 0 && ListItems()}</List>
         <AddCard>
-          <Item onClick={(e) => SubmitNewCard(e)}>
+          <Item>
             <TextAddCard component="span">Add Card</TextAddCard>
             <ControlForm className="CF">
               <InputForm
                 id="filled-basic"
-                label="Call me"
                 variant="filled"
                 autoComplete="off"
                 type="text"
                 onChange={(e) => setTitle(e.target.value)}
+                onKeyDown={(e) => handleKeyDownInput(e)}
               />
             </ControlForm>
           </Item>

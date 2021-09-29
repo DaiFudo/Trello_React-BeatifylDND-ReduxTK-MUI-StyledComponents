@@ -24,6 +24,7 @@ const Board: React.FC = () => {
     <Container>
       <Wrapper>
         <Cards>
+          <DragDropContext >
           <Card>
             <List>
               <Item component="a">
@@ -51,7 +52,8 @@ const Board: React.FC = () => {
               <TextAddCard>Add Card</TextAddCard>
             </List>
           </AddCard>
-        </Cards>
+        </Cards> 
+        <DragDropContext />
       </Wrapper>
     </Container>
   );
