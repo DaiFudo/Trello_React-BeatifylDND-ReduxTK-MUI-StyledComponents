@@ -57,7 +57,7 @@ export const Item = styled(Box)({
   margin: "10px 5px 10px 5px",
   transition: "all 1s ease",
   width: "85%",
-  height: "20px",
+  minHeight: "20px",
   borderRadius: "5px",
   background: "white",
   display: "flex",
@@ -73,6 +73,10 @@ export const ControlForm = styled(FormControl)({
 export const Title = styled(Box)({});
 export const InputForm = styled(TextField)({
   marginTop: "10px",
+  borderRadius: "5px",
+  width: "130px",
+  display: "flex",
+  justifyContent: "flex-end",
 });
 // Для обрезания титула textOverflow: ellipsis
 

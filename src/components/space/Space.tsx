@@ -26,11 +26,6 @@ const Space: React.FC<Cards> = () => {
 
   const history = useHistory();
 
-  const OpenBoard = (item: any) => {
-    if (item.id) {
-      return history.push(`/Workboard/${item.id}`);
-    }
-  };
   const handleKeyDownInput = async (e: any) => {
     if (e.key === "Enter" && title !== "") {
       let arr = space;
@@ -51,11 +46,15 @@ const Space: React.FC<Cards> = () => {
       }
     });
   };
-
+  const OpenBoard = (item: any) => {
+    if (item.id) {
+      return history.push(`/Workboard/${item.id}`);
+    }
+  };
   return (
     <Container>
       <Wrapper>
-        <List>{space.length > 0 && ListItems()}</List>
+        <List> {ListItems()}</List>
         <AddCard>
           <Item>
             <TextAddCard component="span">Add Card</TextAddCard>
