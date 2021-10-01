@@ -3,18 +3,6 @@ import React from "react";
 import { Button, Box, styled, TextField, FormControl } from "@material-ui/core";
 import Delete from "@material-ui/icons/Delete";
 
-export const Container = styled(Box)({
-  height: "90%",
-  width: "100%",
-  display: "flex",
-  flexWrap: "wrap",
-  alignContent: "flex-start",
-  alignItems: "flex-start",
-  justifyContent: "flex-start",
-  flexDirection: "row",
-  position: "absolute",
-  backgroundImage: "url('https://wallpapercave.com/wp/wp2760733.jpg')",
-});
 export const Wrapper = styled(Box)({
   margin: "10px",
   minHeight: "6%",
