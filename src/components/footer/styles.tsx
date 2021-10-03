@@ -6,7 +6,7 @@ export const Container = styled(Box)({
   height: "70px",
   width: "100%",
   display: "flex",
-  position: "absolute",
+  position: "fixed",
   justifyContent: "space-between",
   alignItems: "center",
   margin: "0 auto",

@@ -28,11 +28,14 @@ export const Card = styled(Box)({
 });
 export const Cards = styled(Box)({
   display: "flex",
+  alignItems: "flex-start",
+  marginBottom: "100px",
 });
 export const List = styled(Box)({
   display: "flex",
   flexWrap: "wrap",
   justifyContent: "space-evenly",
+  alignContent: "flex-start",
   fontSize: "bold",
   margin: "10px",
   width: "170px",

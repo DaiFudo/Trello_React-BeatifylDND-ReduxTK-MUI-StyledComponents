@@ -18,52 +18,49 @@ import {
 } from "./styles";
 import Container from "../UI/Container/Container";
 
-type eventType = React.KeyboardEvent<HTMLInputElement> &
+type EventType = React.KeyboardEvent<HTMLInputElement> &
   React.ChangeEvent<HTMLInputElement>;
 
+interface ICard {
+  title: string;
+  idForm: string;
+  idInput: string;
+  task: string[];
+}
+
 const Board: React.FC = () => {
-  const [title, setTitle] = useState<string>("");
-  const [cards, setCards] = useState<
-    { title: string; idForm: string; idInput: string; task?: any[] }[]
-  >([]);
-  /* const ref = React.useRef(null); */
+  const [cards, setCards] = useState<ICard[]>([]);
 
-  const createBoard = async (e: eventType) => {
-    console.log(e.target.value);
-
-    setTitle(e.target.value);
-    if (e.key === "Enter" && title !== "" && !!e.target.value) {
-      console.log("from MakeBoards", e);
-      let arr = cards;
+  const createBoard = async (e: EventType) => {
+    let boardTitle = e.target.value;
+    if (e.key === "Enter" && boardTitle !== "") {
       const id = uuidv4();
-      arr.push({ title: title, idForm: id, idInput: id });
-      setCards(arr);
+      setCards([
+        ...cards,
+        {
+          title: boardTitle,
+          idForm: id,
+          idInput: id,
+          task: [],
+        },
+      ]);
       e.target.value = "";
-      /* console.log(ref); */
     }
   };
-  const createTask = (e: eventType, id: string) => {
-    if (e.key === "Enter" && title !== "") {
-      /* if(cards.idForm === cards.idInput){
 
-      } */
+  const createTask = (e: EventType, id: string | number) => {
+    const newTask = e.target.value;
 
-      let arr = cards;
-      console.log(cards);
-
-      let res = arr.findIndex((item) => item.idForm === id);
-      console.log(res);
-
-      /* setCards({
-        cards.slice(0, res),
-        {...cards[res], tasks: cards[res].push(e.target.value)},
-        cards.slice(res + 1)
-      }) 
-      //console.log(res);
-     let inputTaskValue = e.target.value;
-      let arr = [];
-      arr.push({ ...cards, task: inputTaskValue });
-      setCards(arr);   */
+    if (e.key === "Enter" && newTask !== "") {
+      setCards(
+        cards.map((item) => {
+          if (item.idForm === id) {
+            item.task.push(newTask);
+            e.target.value = "";
+          }
+          return item;
+        })
+      );
     }
   };
 
@@ -72,14 +69,12 @@ const Board: React.FC = () => {
       const renderInputForTask = () => {
         return (
           <InputForm
-            /* ref={ref} */
             key={item.idInput}
             id="filled-basic"
             label="New task"
             variant="filled"
             autoComplete="off"
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={(e: eventType) => createTask(e, item.idForm)}
+            onKeyDown={(e: EventType) => createTask(e, item.idForm)}
           />
         );
       };
@@ -87,7 +82,14 @@ const Board: React.FC = () => {
       return (
         <Card key={item.idForm}>
           <Title>{item.title}</Title>
-          <List>{item.task}</List>
+          <List>
+            {item.task?.map((task) => (
+              <Item component="a" key={uuidv4()}>
+                {task}
+                <DeleteIcon />
+              </Item>
+            ))}
+          </List>
           {renderInputForTask()}
         </Card>
       );
@@ -99,40 +101,13 @@ const Board: React.FC = () => {
       <Wrapper>
         <Cards>
           {renderListCards()}
-
-          <Card>
-            <Title>Пример</Title>
-            <List>
-              <Item component="a">
-                Закопать людей <DeleteIcon />
-              </Item>
-              <Item component="a">
-                Взрастить детей
-                <DeleteIcon />
-              </Item>
-              <Item component="a">
-                Удалить зубы у хейтеров <DeleteIcon />
-              </Item>
-            </List>
-            <ControlForm>
-              <InputForm
-                id="filled-basic"
-                label="New task"
-                variant="filled"
-                autoComplete="off"
-              />
-            </ControlForm>
-          </Card>
-
           <AddCard>
             <List>
               <TextAddCard>Add Card</TextAddCard>
             </List>
             <InputForm
               autoComplete="off"
-              onKeyDown={(e: eventType) => {
-                createBoard(e);
-              }}
+              onKeyDown={(e: EventType) => createBoard(e)}
             />
           </AddCard>
         </Cards>
@@ -141,5 +116,3 @@ const Board: React.FC = () => {
   );
 };
 export default Board;
-
-//ListCards - ListItem (state: {title: string, tasks: string[]})
