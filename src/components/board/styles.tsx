@@ -25,6 +25,7 @@ export const Card = styled(Box)({
   borderRadius: "5px",
   background:
     "rgb(60,235,237) linear-gradient(214deg, rgba(60,235,237,1) 24%, rgba(41,249,180,1) 93%)",
+  border: "1px black",
 });
 export const Cards = styled(Box)({
   display: "flex",

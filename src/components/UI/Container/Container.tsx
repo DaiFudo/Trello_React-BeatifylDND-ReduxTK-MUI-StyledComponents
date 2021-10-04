@@ -13,7 +13,7 @@ const Container = styled(Box)({
   flexDirection: "row",
   position: "absolute",
   backgroundImage:
-    "url('https://images.wallpapersden.com/image/download/purple-sunrise-4k-vaporwave_bGplZmiUmZqaraWkpJRmbmdlrWZlbWU.jpg')",
+    "url('https://wallpaper-mania.com/wp-content/uploads/2018/09/High_resolution_wallpaper_background_ID_77700122185.jpg')",
 });
 
 export default Container;

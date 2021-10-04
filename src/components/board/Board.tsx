@@ -3,6 +3,7 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 import { v4 as uuidv4 } from "uuid";
 
+import Container from "../UI/Container/Container";
 import {
   Item,
   List,
@@ -16,7 +17,6 @@ import {
   DeleteIcon,
   Title,
 } from "./styles";
-import Container from "../UI/Container/Container";
 
 type EventType = React.KeyboardEvent<HTMLInputElement> &
   React.ChangeEvent<HTMLInputElement>;
@@ -25,7 +25,7 @@ interface ICard {
   title: string;
   idForm: string;
   idInput: string;
-  task: string[];
+  task: { name: string; key: string }[];
 }
 
 const Board: React.FC = () => {
@@ -35,6 +35,8 @@ const Board: React.FC = () => {
     let boardTitle = e.target.value;
     if (e.key === "Enter" && boardTitle !== "") {
       const id = uuidv4();
+      console.log(cards);
+
       setCards([
         ...cards,
         {
@@ -55,7 +57,7 @@ const Board: React.FC = () => {
       setCards(
         cards.map((item) => {
           if (item.idForm === id) {
-            item.task.push(newTask);
+            item.task.push({ name: newTask, key: uuidv4() });
             e.target.value = "";
           }
           return item;
@@ -78,14 +80,15 @@ const Board: React.FC = () => {
           />
         );
       };
+      console.log(item);
 
       return (
         <Card key={item.idForm}>
           <Title>{item.title}</Title>
           <List>
             {item.task?.map((task) => (
-              <Item component="a" key={uuidv4()}>
-                {task}
+              <Item component="a" key={task.key}>
+                {task.name}
                 <DeleteIcon />
               </Item>
             ))}
