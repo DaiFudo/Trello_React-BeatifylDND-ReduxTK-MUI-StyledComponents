@@ -24,14 +24,8 @@ interface ICard {
   title: string;
   idForm: string;
   idInput: string;
-  task: { name: string; key: string }[];
-  items: any;
+  task: { name: string; id: string }[];
 }
-/* interface IResDrag {
-  result: any;
-  cards: any;
-  setBoards: any;
-} */
 
 const Board: React.FC = () => {
   uuidv4();
@@ -45,12 +39,21 @@ const Board: React.FC = () => {
     if (source.droppableId !== destination.droppableId) {
       console.log("hz");
 
-      const sourceCard = cards[source.droppableId];
+      // const sourceCard = cards[source.droppableId];
+      const sourceCard = cards.find(
+        (item: any) => item.idForm === source.droppableId
+      );
       const destCard = cards[destination.droppableId];
-      const sourceItems = [...sourceCard.items];
-      const destItems = [...destCard.items];
-      const [removed] = sourceItems.splice(source.index, 1);
-      destItems.splice(destination.index, 0, removed);
+      const sourceTask = [...sourceCard.task];
+      const destTask = [...destCard.task];
+      const [removed] = sourceTask.splice(source.index, 1);
+      destTask.splice(destination.index, 0, removed);
+      console.log(destCard);
+      // нужно сравнить все что в примере по логу и по аналогии засетать информацию в карты тут
+      /* {
+        ...sourceCard,
+        task: [...sourceCard.task, new Task]
+      }
       setCards({
         ...cards,
         [source.droppableId]: {
@@ -61,14 +64,16 @@ const Board: React.FC = () => {
           ...destCard,
           items: destItems,
         },
-      });
+      }); */
     } else {
-      console.log("hi1");
-
-      const card = cards[source.droppableId];
-      console.log(typeof cards.items);
-      const copiedItems = [...card.items];
-      console.log("hi3");
+      // const card = cards[source.droppableId];
+      // console.log(cards);
+      const card = cards.find(
+        (item: any) => item.idForm === source.droppableId
+      );
+      console.log(card);
+      const copiedItems = [...card.task]; // спотык тут.
+      console.log("hi3", copiedItems); // сюда не доходит
       const [removed] = copiedItems.splice(source.index, 1);
       console.log("hi4");
       copiedItems.splice(destination.index, 0, removed);
@@ -98,7 +103,6 @@ const Board: React.FC = () => {
           idForm: id,
           idInput: id,
           task: [],
-          items: {},
         },
       ]);
       e.target.value = "";
@@ -112,7 +116,7 @@ const Board: React.FC = () => {
       setCards(
         cards.map((item) => {
           if (item.idForm === id) {
-            item.task.push({ name: newTask, key: uuidv4() });
+            item.task.push({ name: newTask, id: uuidv4() });
             e.target.value = "";
           }
           return item;
@@ -122,6 +126,8 @@ const Board: React.FC = () => {
   };
 
   const renderListCards = () => {
+    console.log(cards);
+
     return cards.map((item) => {
       const renderInputForTask = () => {
         return (
@@ -155,8 +161,8 @@ const Board: React.FC = () => {
                       {item.task.map((task, index) => {
                         return (
                           <Draggable
-                            key={task.key}
-                            draggableId={task.key}
+                            key={task.id}
+                            draggableId={task.id}
                             index={index}
                           >
                             {(provided) => {
