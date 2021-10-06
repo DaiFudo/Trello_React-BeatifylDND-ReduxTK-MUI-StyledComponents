@@ -1,6 +1,4 @@
-import React from "react";
-
-import { Button, Box, styled, TextField, FormControl } from "@material-ui/core";
+import { Box, styled, TextField, FormControl } from "@material-ui/core";
 import Delete from "@material-ui/icons/Delete";
 
 export const Wrapper = styled(Box)({

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, Link, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { v4 as uuidv4 } from "uuid";
 

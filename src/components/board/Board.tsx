@@ -5,18 +5,17 @@ import { v4 as uuidv4 } from "uuid";
 
 import Container from "../UI/Container/Container";
 import {
-  Item,
   List,
   Wrapper,
   Card,
   InputForm,
-  ControlForm,
   AddCard,
   Cards,
   TextAddCard,
-  DeleteIcon,
   Title,
-} from "./styles";
+  Item,
+  DeleteIcon,
+} from "./style";
 
 type EventType = React.KeyboardEvent<HTMLInputElement> &
   React.ChangeEvent<HTMLInputElement>;
@@ -26,48 +25,58 @@ interface ICard {
   idForm: string;
   idInput: string;
   task: { name: string; key: string }[];
+  items: any;
 }
 /* interface IResDrag {
   result: any;
-  boards: any;
+  cards: any;
   setBoards: any;
 } */
 
 const Board: React.FC = () => {
+  uuidv4();
   const [cards, setCards] = useState<ICard[]>([]);
 
   // drag and drop
-  const onDragEnd = (result: any, boards: any, setBoards: any) => {
-    if (!result.destination) return;
+  const onDragEnd = (result: any, cards: any, setCards: any) => {
+    if (!result.destination) return console.log("Возврат на прежнее место.");
     const { source, destination } = result;
 
     if (source.droppableId !== destination.droppableId) {
-      const sourceBoard = boards[source.droppableId];
-      const destBoard = boards[destination.droppableId];
-      const sourceItems = [...sourceBoard.items];
-      const destItems = [...destBoard.items];
+      console.log("hz");
+
+      const sourceCard = cards[source.droppableId];
+      const destCard = cards[destination.droppableId];
+      const sourceItems = [...sourceCard.items];
+      const destItems = [...destCard.items];
       const [removed] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, removed);
       setCards({
-        ...boards,
+        ...cards,
         [source.droppableId]: {
-          ...sourceBoard,
+          ...sourceCard,
           items: sourceItems,
         },
         [destination.droppableId]: {
-          ...destBoard,
+          ...destCard,
           items: destItems,
         },
       });
     } else {
-      const board = boards[source.droppableId];
-      const copiedItems = [...board.items];
+      console.log("hi1");
+
+      const card = cards[source.droppableId];
+      console.log(typeof cards.items);
+      const copiedItems = [...card.items];
+      console.log("hi3");
       const [removed] = copiedItems.splice(source.index, 1);
+      console.log("hi4");
       copiedItems.splice(destination.index, 0, removed);
+      console.log("hi5");
       setCards({
-        ...boards,
+        ...cards,
         [source.droppableId]: {
-          ...board,
+          ...card,
           items: copiedItems,
         },
       });
@@ -89,6 +98,7 @@ const Board: React.FC = () => {
           idForm: id,
           idInput: id,
           task: [],
+          items: {},
         },
       ]);
       e.target.value = "";
@@ -134,10 +144,14 @@ const Board: React.FC = () => {
           <Card key={item.idForm}>
             <Title>{item.title}</Title>
             <List>
-              <Droppable droppableId={item.idForm}>
-                {(provided, snapshot) => {
+              <Droppable droppableId={item.idForm} key={item.idForm}>
+                {(provided) => {
                   return (
-                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                    <div
+                      className="another div"
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
                       {item.task.map((task, index) => {
                         return (
                           <Draggable
@@ -145,14 +159,16 @@ const Board: React.FC = () => {
                             draggableId={task.key}
                             index={index}
                           >
-                            {(provided, snapshot) => {
+                            {(provided) => {
                               return (
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                 >
-                                  {task.name}
+                                  <Item component="a">
+                                    {task.name} <DeleteIcon />
+                                  </Item>
                                 </div>
                               );
                             }}
