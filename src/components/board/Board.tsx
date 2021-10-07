@@ -34,11 +34,11 @@ const Board: React.FC = () => {
   // drag and drop
   const onDragEnd = (result: any, cards: any, setCards: any) => {
     if (!result.destination) return console.log("Возврат на прежнее место.");
+
     const { source, destination } = result;
+    console.log(source);
 
     if (source.droppableId !== destination.droppableId) {
-      console.log("hz");
-
       // const sourceCard = cards[source.droppableId];
       const sourceCard = cards.find(
         (item: any) => item.idForm === source.droppableId
@@ -48,7 +48,6 @@ const Board: React.FC = () => {
       const destTask = [...destCard.task];
       const [removed] = sourceTask.splice(source.index, 1);
       destTask.splice(destination.index, 0, removed);
-      console.log(destCard);
       // нужно сравнить все что в примере по логу и по аналогии засетать информацию в карты тут
       /* {
         ...sourceCard,
@@ -71,20 +70,25 @@ const Board: React.FC = () => {
       const card = cards.find(
         (item: any) => item.idForm === source.droppableId
       );
-      console.log(card);
-      const copiedItems = [...card.task]; // спотык тут.
-      console.log("hi3", copiedItems); // сюда не доходит
+      const copiedItems = [...card.task];
+      /* console.log("копируем таск в: ", copiedItems); */
+
       const [removed] = copiedItems.splice(source.index, 1);
-      console.log("hi4");
+      /* console.log("забераем нужный элем: ", removed); */
+
       copiedItems.splice(destination.index, 0, removed);
-      console.log("hi5");
-      setCards({
-        ...cards,
-        [source.droppableId]: {
-          ...card,
-          items: copiedItems,
-        },
+      /* console.log("вставляем нужный элем: ", copiedItems); */
+
+      const mappedCards = cards.map((card: ICard) => {
+        if (card.idForm === source.droppableId) {
+          return {
+            ...card,
+            task: copiedItems,
+          };
+        }
+        return card;
       });
+      setCards(mappedCards);
     }
   };
 
@@ -94,7 +98,6 @@ const Board: React.FC = () => {
     let boardTitle = e.target.value;
     if (e.key === "Enter" && boardTitle !== "") {
       const id = uuidv4();
-      console.log(cards);
 
       setCards([
         ...cards,
@@ -126,8 +129,6 @@ const Board: React.FC = () => {
   };
 
   const renderListCards = () => {
-    console.log(cards);
-
     return cards.map((item) => {
       const renderInputForTask = () => {
         return (
@@ -141,23 +142,18 @@ const Board: React.FC = () => {
           />
         );
       };
-      console.log(item);
 
       return (
         <DragDropContext
           onDragEnd={(result) => onDragEnd(result, cards, setCards)}
         >
-          <Card key={item.idForm}>
+          <Card className="here" key={item.idForm}>
             <Title>{item.title}</Title>
             <List>
               <Droppable droppableId={item.idForm} key={item.idForm}>
                 {(provided) => {
                   return (
-                    <div
-                      className="another div"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                    >
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
                       {item.task.map((task, index) => {
                         return (
                           <Draggable
@@ -197,7 +193,7 @@ const Board: React.FC = () => {
   return (
     <Container>
       <Wrapper>
-        <Cards>
+        <Cards className="all cards">
           {renderListCards()}
           <AddCard>
             <List>
