@@ -33,52 +33,76 @@ const Board: React.FC = () => {
 
   // drag and drop
   const onDragEnd = (result: any, cards: any, setCards: any) => {
-    if (!result.destination) return console.log("Возврат на прежнее место.");
-
+    if (!result.destination) return console.log("back"); // Возврат элемента назад, если вышел за рамки.
     const { source, destination } = result;
-    console.log(source);
 
     if (source.droppableId !== destination.droppableId) {
+      // Перекидывание таска между карточками.
+
       // const sourceCard = cards[source.droppableId];
       const sourceCard = cards.find(
         (item: any) => item.idForm === source.droppableId
       );
-      const destCard = cards[destination.droppableId];
+      const destCard = cards.find(
+        (item: any) => item.idForm === destination.droppableId
+      );
       const sourceTask = [...sourceCard.task];
       const destTask = [...destCard.task];
       const [removed] = sourceTask.splice(source.index, 1);
+
       destTask.splice(destination.index, 0, removed);
-      // нужно сравнить все что в примере по логу и по аналогии засетать информацию в карты тут
-      /* {
-        ...sourceCard,
-        task: [...sourceCard.task, new Task]
-      }
-      setCards({
+
+      console.log(0, cards);
+      console.log(1, sourceCard);
+      console.log(2, destCard);
+      console.log(3, sourceTask);
+      console.log(4, destTask);
+      console.log(5, removed);
+
+      const a = cards.map((item: any) => {
+        console.log("itemsss", item);
+
+        if (sourceCard.formId == item.formId) {
+          return {
+            ...item,
+            task: sourceTask,
+          };
+        }
+        if (destCard.formId == item.formId) {
+          console.log("hi");
+
+          return {
+            ...item,
+            task: ["12"],
+          };
+        }
+        return item;
+      });
+      console.log("a", a);
+      /* setCards({
+          ...cards,
+          sourceCard: 
+        }) */
+
+      /* setCards({
         ...cards,
         [source.droppableId]: {
           ...sourceCard,
-          items: sourceItems,
+          items: sourceTask,
         },
         [destination.droppableId]: {
           ...destCard,
-          items: destItems,
+          items: destTask,
         },
       }); */
     } else {
-      // const card = cards[source.droppableId];
-      // console.log(cards);
+      // Перебрасывание тасков в рамках одной доски.
       const card = cards.find(
         (item: any) => item.idForm === source.droppableId
       );
       const copiedItems = [...card.task];
-      /* console.log("копируем таск в: ", copiedItems); */
-
       const [removed] = copiedItems.splice(source.index, 1);
-      /* console.log("забераем нужный элем: ", removed); */
-
       copiedItems.splice(destination.index, 0, removed);
-      /* console.log("вставляем нужный элем: ", copiedItems); */
-
       const mappedCards = cards.map((card: ICard) => {
         if (card.idForm === source.droppableId) {
           return {
@@ -129,31 +153,21 @@ const Board: React.FC = () => {
   };
 
   const renderListCards = () => {
+    console.log(cards);
     return cards.map((item) => {
-      const renderInputForTask = () => {
-        return (
-          <InputForm
-            key={item.idInput}
-            id="filled-basic"
-            label="New task"
-            variant="filled"
-            autoComplete="off"
-            onKeyDown={(e: EventType) => createTask(e, item.idForm)}
-          />
-        );
-      };
-
       return (
-        <DragDropContext
-          onDragEnd={(result) => onDragEnd(result, cards, setCards)}
-        >
+        <Cards className="all cards">
           <Card className="here" key={item.idForm}>
             <Title>{item.title}</Title>
             <List>
               <Droppable droppableId={item.idForm} key={item.idForm}>
                 {(provided) => {
                   return (
-                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                    <div
+                      className="anotherDiv"
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
                       {item.task.map((task, index) => {
                         return (
                           <Draggable
@@ -164,6 +178,7 @@ const Board: React.FC = () => {
                             {(provided) => {
                               return (
                                 <div
+                                  className="anotherDiv2"
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
@@ -183,9 +198,16 @@ const Board: React.FC = () => {
                 }}
               </Droppable>
             </List>
-            {renderInputForTask()}
+            <InputForm
+              key={item.idInput}
+              id="filled-basic"
+              label="New task"
+              variant="filled"
+              autoComplete="off"
+              onKeyDown={(e: EventType) => createTask(e, item.idForm)}
+            />
           </Card>
-        </DragDropContext>
+        </Cards>
       );
     });
   };
@@ -193,18 +215,22 @@ const Board: React.FC = () => {
   return (
     <Container>
       <Wrapper>
-        <Cards className="all cards">
-          {renderListCards()}
-          <AddCard>
-            <List>
-              <TextAddCard>Add Card</TextAddCard>
-            </List>
-            <InputForm
-              autoComplete="off"
-              onKeyDown={(e: EventType) => createBoard(e)}
-            />
-          </AddCard>
-        </Cards>
+        <DragDropContext
+          onDragEnd={(result) => onDragEnd(result, cards, setCards)}
+        >
+          <Cards>
+            {renderListCards()}
+            <AddCard>
+              <List>
+                <TextAddCard>Add Card</TextAddCard>
+              </List>
+              <InputForm
+                autoComplete="off"
+                onKeyDown={(e: EventType) => createBoard(e)}
+              />
+            </AddCard>
+          </Cards>
+        </DragDropContext>
       </Wrapper>
     </Container>
   );

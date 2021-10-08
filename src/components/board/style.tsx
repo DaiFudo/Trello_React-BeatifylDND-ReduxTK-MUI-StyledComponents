@@ -22,7 +22,7 @@ export const Card = styled(Box)({
   minHeight: "100px",
   borderRadius: "5px",
   background:
-    "rgb(60,235,237) linear-gradient(214deg, rgba(60,235,237,1) 24%, rgba(41,249,180,1) 93%)",
+    "linear-gradient(214deg, rgba(237,60,215,1) 20%, rgba(82,41,249,1) 96%)",
   border: "1px black",
 });
 export const Cards = styled(Box)({
@@ -60,7 +60,12 @@ export const Item = styled(Box)({
 export const ControlForm = styled(FormControl)({
   borderRadius: "5px",
 });
-export const Title = styled(Box)({});
+export const Title = styled(Box)({
+  marginTop: "5px",
+  backgroundColor:
+    "radial-gradient(circle, rgb(63,184,251,1) 50%, rgba(85,70,252,1) 98%)",
+  borderRadius: "5px",
+});
 export const InputForm = styled(TextField)({
   marginTop: "10px",
   borderRadius: "5px",
