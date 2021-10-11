@@ -37,6 +37,7 @@ const Board: React.FC = () => {
     const { source, destination } = result;
 
     if (source.droppableId !== destination.droppableId) {
+      changeCards();
       // Перекидывание таска между карточками.
       const sourceCard = cards.find(
         (item: any) => item.idForm === source.droppableId
@@ -56,11 +57,10 @@ const Board: React.FC = () => {
       console.log(5, removed);
 
       const changeTasks = cards.map((item: any) => {
-        console.log(10, removed);
-        console.log(11, sourceCard);
         destTask.find((item: any) => item.task === destination.task);
         console.log(111, destTask);
-
+        console.log(10, removed);
+        console.log(11, sourceCard);
         if (removed === destTask) {
           console.log("fuck off", removed, destTask);
         }
