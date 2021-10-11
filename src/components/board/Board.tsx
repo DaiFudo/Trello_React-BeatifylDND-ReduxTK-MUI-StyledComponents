@@ -38,8 +38,6 @@ const Board: React.FC = () => {
 
     if (source.droppableId !== destination.droppableId) {
       // Перекидывание таска между карточками.
-
-      // const sourceCard = cards[source.droppableId];
       const sourceCard = cards.find(
         (item: any) => item.idForm === source.droppableId
       );
@@ -49,51 +47,30 @@ const Board: React.FC = () => {
       const sourceTask = [...sourceCard.task];
       const destTask = [...destCard.task];
       const [removed] = sourceTask.splice(source.index, 1);
-
       destTask.splice(destination.index, 0, removed);
 
-      console.log(0, cards);
       console.log(1, sourceCard);
       console.log(2, destCard);
       console.log(3, sourceTask);
       console.log(4, destTask);
       console.log(5, removed);
 
-      const a = cards.map((item: any) => {
-        console.log("itemsss", item);
+      const changeTasks = cards.map((item: any) => {
+        console.log(10, removed);
+        console.log(11, sourceCard);
+        destTask.find((item: any) => item.task === destination.task);
+        console.log(111, destTask);
 
-        if (sourceCard.formId == item.formId) {
-          return {
-            ...item,
-            task: sourceTask,
-          };
-        }
-        if (destCard.formId == item.formId) {
-          console.log("hi");
-
-          return {
-            ...item,
-            task: ["12"],
-          };
+        if (removed === destTask) {
+          console.log("fuck off", removed, destTask);
         }
         return item;
       });
-      console.log("a", a);
-      /* setCards({
-          ...cards,
-          sourceCard: 
-        }) */
+      changeTasks();
 
       /* setCards({
         ...cards,
-        [source.droppableId]: {
-          ...sourceCard,
-          items: sourceTask,
-        },
-        [destination.droppableId]: {
-          ...destCard,
-          items: destTask,
-        },
+        task: sourceCard,
       }); */
     } else {
       // Перебрасывание тасков в рамках одной доски.
