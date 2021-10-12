@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import boardStore from "./boardStore";
+import counterReducer from "./boardStore";
 
 export default configureStore({
   reducer: {

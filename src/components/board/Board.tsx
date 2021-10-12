@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+
+import {
+  changeInsideTaskPosition,
+  boardSelector,
+} from "../../store/boardStore";
+import { useSelector, useDispatch } from "react-redux";
+
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 import { v4 as uuidv4 } from "uuid";
@@ -24,12 +31,16 @@ interface ICard {
   title: string;
   idForm: string;
   idInput: string;
-  task: { name: string; id: string }[];
+  task: { titleTask: string; id: string }[];
 }
 
 const Board: React.FC = () => {
-  uuidv4();
   const [cards, setCards] = useState<ICard[]>([]);
+
+  const count = useSelector(boardSelector);
+  console.log(123, count.cards);
+
+  const dispatch = useDispatch();
 
   // drag and drop
   const onDragEnd = (result: any, cards: any, setCards: any) => {
@@ -37,7 +48,6 @@ const Board: React.FC = () => {
     const { source, destination } = result;
 
     if (source.droppableId !== destination.droppableId) {
-      changeCards();
       // Перекидывание таска между карточками.
       const sourceCard = cards.find(
         (item: any) => item.idForm === source.droppableId
@@ -50,20 +60,9 @@ const Board: React.FC = () => {
       const [removed] = sourceTask.splice(source.index, 1);
       destTask.splice(destination.index, 0, removed);
 
-      console.log(1, sourceCard);
-      console.log(2, destCard);
-      console.log(3, sourceTask);
-      console.log(4, destTask);
-      console.log(5, removed);
-
       const changeTasks = cards.map((item: any) => {
         destTask.find((item: any) => item.task === destination.task);
-        console.log(111, destTask);
-        console.log(10, removed);
-        console.log(11, sourceCard);
-        if (removed === destTask) {
-          console.log("fuck off", removed, destTask);
-        }
+
         return item;
       });
       changeTasks();
@@ -73,8 +72,9 @@ const Board: React.FC = () => {
         task: sourceCard,
       }); */
     } else {
+      dispatch(changeInsideTaskPosition({ cards, source, destination }));
       // Перебрасывание тасков в рамках одной доски.
-      const card = cards.find(
+      /* const card = cards.find(
         (item: any) => item.idForm === source.droppableId
       );
       const copiedItems = [...card.task];
@@ -89,7 +89,7 @@ const Board: React.FC = () => {
         }
         return card;
       });
-      setCards(mappedCards);
+      setCards(mappedCards);*/
     }
   };
 
@@ -120,7 +120,7 @@ const Board: React.FC = () => {
       setCards(
         cards.map((item) => {
           if (item.idForm === id) {
-            item.task.push({ name: newTask, id: uuidv4() });
+            item.task.push({ titleTask: newTask, id: uuidv4() });
             e.target.value = "";
           }
           return item;
@@ -130,22 +130,19 @@ const Board: React.FC = () => {
   };
 
   const renderListCards = () => {
-    console.log(cards);
-    return cards.map((item) => {
+    return count.cards.map((item: any) => {
+      console.log(123, item);
+
       return (
-        <Cards className="all cards">
-          <Card className="here" key={item.idForm}>
+        <Cards>
+          <Card key={item.idForm}>
             <Title>{item.title}</Title>
             <List>
               <Droppable droppableId={item.idForm} key={item.idForm}>
                 {(provided) => {
                   return (
-                    <div
-                      className="anotherDiv"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                    >
-                      {item.task.map((task, index) => {
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {item.task.map((task: any, index: any) => {
                         return (
                           <Draggable
                             key={task.id}
@@ -155,13 +152,12 @@ const Board: React.FC = () => {
                             {(provided) => {
                               return (
                                 <div
-                                  className="anotherDiv2"
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                 >
                                   <Item component="a">
-                                    {task.name} <DeleteIcon />
+                                    {task.titleTask} <DeleteIcon />
                                   </Item>
                                 </div>
                               );

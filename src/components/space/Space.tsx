@@ -21,7 +21,7 @@ interface Cards {
 }
 
 const Space: React.FC<Cards> = () => {
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>(""); // Почему у меня тут новый тайтл я же его удалил
   const [space, setSpace] = useState<{ title: string; id: string }[]>([]);
 
   const history = useHistory();
