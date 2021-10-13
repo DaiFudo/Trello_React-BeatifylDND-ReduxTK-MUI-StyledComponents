@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 interface ICard {
   title: string;
   idForm: string;
@@ -16,26 +17,24 @@ export const slice = createSlice({
   initialState: {
     cards: [
       {
-        title: "",
-        idForm: "",
-        idInput: "",
-        task: [{ titleTask: "", id: "" }],
+        title: "12",
+        idForm: "44",
+        idInput: "66",
+        task: [
+          { titleTask: "77", id: "9" },
+          { titleTask: "123", id: "1119" },
+        ],
       },
     ],
   },
   reducers: {
-    /* changeCards: (state, payload) => {
-            const a = cards.findIndex(item => item.id === payload.id)
-            cards.splice();
-            const a = cards.findIndex(item => item.id === payload.idNew)
-
-        }, */
+    // Логика Drag and Drop :3
+    // changeInsideTaskPosition - Логика отвечающая за смену таска в пределах одной карточки.
     changeInsideTaskPosition: (state, action: PayloadAction<TTypes>) => {
       const actionPayload = action.payload;
       const card = actionPayload.cards.find(
         (item: any) => item.idForm === actionPayload.source.droppableId
       );
-      console.log(1, card);
 
       const copiedItems = [...card.task];
       const [removed] = copiedItems.splice(actionPayload.source.index, 1);
@@ -49,16 +48,42 @@ export const slice = createSlice({
         }
         return card;
       });
-      console.log(2, mappedCards);
+      return void (state.cards = mappedCards);
+    },
 
-      //setCards(mappedCards);
-      state.cards = mappedCards;
-      // return mappedCards;
+    //Логика создания карточки
+    createCards: (state, action) => {
+      let actionPayload = action.payload;
+
+      let id = uuidv4();
+      let createCard = [
+        ...actionPayload.cards,
+        {
+          title: actionPayload.cardTitle,
+          idForm: id,
+          idInput: id,
+          task: [],
+        },
+      ];
+
+      // actionPayload.cards.push({
+      //   title: actionPayload.cardTitle, пример того как меня унизил js, хорошо что я люблю страдать.
+      //   idForm: uuidv4(),
+      //   idInput: uuidv4(),
+      //   task: [{}],
+      // });
+      return void (state.cards = createCard);
+    },
+
+    сreateTaskInsideCard: (state, action) => {
+      const actionPayload = action.payload;
+      console.log("newTask from boardStore", actionPayload.newTask);
     },
   },
 });
-export const { changeInsideTaskPosition } = slice.actions;
+export const { createCards, сreateTaskInsideCard, changeInsideTaskPosition } =
+  slice.actions;
 
-export const boardSelector = (state: any) => state.board; //мб тут .value нужно или аналоги
+export const cardSelector = (state: any) => state.board.cards;
 
 export default slice.reducer;

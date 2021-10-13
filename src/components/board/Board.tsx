@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 
 import {
   changeInsideTaskPosition,
-  boardSelector,
+  сreateTaskInsideCard,
+  cardSelector,
+  createCards,
 } from "../../store/boardStore";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -27,23 +29,14 @@ import {
 type EventType = React.KeyboardEvent<HTMLInputElement> &
   React.ChangeEvent<HTMLInputElement>;
 
-interface ICard {
-  title: string;
-  idForm: string;
-  idInput: string;
-  task: { titleTask: string; id: string }[];
-}
-
 const Board: React.FC = () => {
-  const [cards, setCards] = useState<ICard[]>([]);
-
-  const count = useSelector(boardSelector);
-  console.log(123, count.cards);
-
+  const cards = useSelector(cardSelector); // naming
   const dispatch = useDispatch();
 
   // drag and drop
-  const onDragEnd = (result: any, cards: any, setCards: any) => {
+  const onDragEnd = (result: any, cards: any) => {
+    console.log("cards", cards);
+
     if (!result.destination) return console.log("back"); // Возврат элемента назад, если вышел за рамки.
     const { source, destination } = result;
 
@@ -66,73 +59,45 @@ const Board: React.FC = () => {
         return item;
       });
       changeTasks();
-
-      /* setCards({
-        ...cards,
-        task: sourceCard,
-      }); */
     } else {
-      dispatch(changeInsideTaskPosition({ cards, source, destination }));
-      // Перебрасывание тасков в рамках одной доски.
-      /* const card = cards.find(
-        (item: any) => item.idForm === source.droppableId
-      );
-      const copiedItems = [...card.task];
-      const [removed] = copiedItems.splice(source.index, 1);
-      copiedItems.splice(destination.index, 0, removed);
-      const mappedCards = cards.map((card: ICard) => {
-        if (card.idForm === source.droppableId) {
-          return {
-            ...card,
-            task: copiedItems,
-          };
-        }
-        return card;
-      });
-      setCards(mappedCards);*/
+      dispatch(changeInsideTaskPosition({ cards: cards, source, destination }));
     }
   };
 
   //
 
-  const createBoard = async (e: EventType) => {
-    let boardTitle = e.target.value;
-    if (e.key === "Enter" && boardTitle !== "") {
-      const id = uuidv4();
-
-      setCards([
-        ...cards,
-        {
-          title: boardTitle,
-          idForm: id,
-          idInput: id,
-          task: [],
-        },
-      ]);
+  const createCard = async (e: EventType) => {
+    let cardTitle = e.target.value;
+    let btnChecker = e.key;
+    if (btnChecker === "Enter" && cardTitle !== "") {
+      console.log("cards", cards);
+      let idForm, idInput, task;
+      dispatch(createCards({ cards, cardTitle, idForm, idInput, task }));
       e.target.value = "";
     }
   };
 
   const createTask = (e: EventType, id: string | number) => {
     const newTask = e.target.value;
+    console.log("id", id);
 
     if (e.key === "Enter" && newTask !== "") {
-      setCards(
-        cards.map((item) => {
+      dispatch(сreateTaskInsideCard({ newTask, id }));
+
+      /* setCards(
+        cards.map((item:any) => {
           if (item.idForm === id) {
             item.task.push({ titleTask: newTask, id: uuidv4() });
             e.target.value = "";
           }
           return item;
         })
-      );
+      ); */
     }
   };
 
   const renderListCards = () => {
-    return count.cards.map((item: any) => {
-      console.log(123, item);
-
+    return cards.map((item: any) => {
       return (
         <Cards>
           <Card key={item.idForm}>
@@ -188,9 +153,7 @@ const Board: React.FC = () => {
   return (
     <Container>
       <Wrapper>
-        <DragDropContext
-          onDragEnd={(result) => onDragEnd(result, cards, setCards)}
-        >
+        <DragDropContext onDragEnd={(result) => onDragEnd(result, cards)}>
           <Cards>
             {renderListCards()}
             <AddCard>
@@ -199,7 +162,7 @@ const Board: React.FC = () => {
               </List>
               <InputForm
                 autoComplete="off"
-                onKeyDown={(e: EventType) => createBoard(e)}
+                onKeyDown={(e: EventType) => createCard(e)}
               />
             </AddCard>
           </Cards>
