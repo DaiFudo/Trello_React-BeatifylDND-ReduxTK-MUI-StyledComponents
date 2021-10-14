@@ -39,16 +39,81 @@ export const slice = createSlice({
       const copiedItems = [...card.task];
       const [removed] = copiedItems.splice(actionPayload.source.index, 1);
       copiedItems.splice(actionPayload.destination.index, 0, removed);
-      const mappedCards = actionPayload.cards.map((card: ICard) => {
-        if (card.idForm === actionPayload.source.droppableId) {
+      const mappedCards = actionPayload.cards.map((item: ICard) => {
+        if (item.idForm === actionPayload.source.droppableId) {
           return {
-            ...card,
+            ...item,
             task: copiedItems,
           };
         }
-        return card;
+        return item;
       });
       return void (state.cards = mappedCards);
+    },
+    // changeOutsideTaskPosition - Логика отвечающая за перекидывание таска во всех карточках.
+    changeOutsideTaskPosition: (state, action) => {
+      console.log("hi");
+      const actionPayload = action.payload;
+
+      const sourceCard = actionPayload.cards.find(
+        (item: any) => item.idForm === actionPayload.source.droppableId
+      );
+      const destCard = actionPayload.cards.find(
+        (item: any) => item.idForm === actionPayload.destination.droppableId
+      );
+
+      const sourceTask = [...sourceCard.task];
+      const destTask = [...destCard.task];
+
+      const [removed] = sourceTask.splice(actionPayload.source.index, 1);
+      const a = {
+        ...actionPayload.cards,
+        [actionPayload.source]: {
+          ...sourceCard,
+          task: sourceTask,
+        },
+        [actionPayload.destination]: {
+          ...destCard,
+          task: destTask,
+        },
+      };
+      console.log("is a", a);
+
+      /* if ([removed] === sourceTask.splice(actionPayload.source.index, 1)) {
+        sourceTask.pop(actionPayload.source.index, 1)
+      } */
+      destTask.splice(actionPayload.destination.index, 0, removed);
+
+      console.log("sourceCard", sourceCard);
+      console.log("removed", [removed]);
+      console.log("destTask", destTask);
+
+      const changeTasks = actionPayload.cards.map((item: any) => {
+        console.log(item);
+
+        /* destTask.find(
+          (item: any) => item.task === actionPayload.destination.task
+          
+        ) */
+      });
+
+      /* const sourceCard = cards.find(
+        (item: any) => item.idForm === source.droppableId
+      );
+      const destCard = cards.find(
+        (item: any) => item.idForm === destination.droppableId
+      );
+      const sourceTask = [...sourceCard.task];
+      const destTask = [...destCard.task];
+      const [removed] = sourceTask.splice(source.index, 1);
+      destTask.splice(destination.index, 0, removed);
+
+      const changeTasks = cards.map((item: any) => {
+        destTask.find((item: any) => item.task === destination.task);
+
+        return item;
+      });
+      changeTasks(); */
     },
 
     //Логика создания карточки
@@ -65,25 +130,35 @@ export const slice = createSlice({
           task: [],
         },
       ];
-
-      // actionPayload.cards.push({
-      //   title: actionPayload.cardTitle, пример того как меня унизил js, хорошо что я люблю страдать.
-      //   idForm: uuidv4(),
-      //   idInput: uuidv4(),
-      //   task: [{}],
-      // });
       return void (state.cards = createCard);
     },
 
+    // сreateTaskInsideCard - Логика отвечающая за создание таска в карточке.
     сreateTaskInsideCard: (state, action) => {
       const actionPayload = action.payload;
-      console.log("newTask from boardStore", actionPayload.newTask);
+      let id = uuidv4();
+      const mappedCards = actionPayload.cards.map((item: ICard) => {
+        if (item.idForm === actionPayload.id) {
+          return {
+            ...item,
+            task: [
+              ...item.task,
+              { titleTask: actionPayload.titleTaskInput, id },
+            ],
+          };
+        }
+        return item;
+      });
+      return void (state.cards = mappedCards);
     },
   },
 });
-export const { createCards, сreateTaskInsideCard, changeInsideTaskPosition } =
-  slice.actions;
+export const {
+  createCards,
+  сreateTaskInsideCard,
+  changeInsideTaskPosition,
+  changeOutsideTaskPosition,
+} = slice.actions;
 
 export const cardSelector = (state: any) => state.board.cards;
-
 export default slice.reducer;

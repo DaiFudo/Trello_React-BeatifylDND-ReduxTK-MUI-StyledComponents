@@ -1,11 +1,13 @@
 import React from "react";
 
 import {
+  changeOutsideTaskPosition,
   changeInsideTaskPosition,
   сreateTaskInsideCard,
   cardSelector,
   createCards,
 } from "../../store/boardStore";
+
 import { useSelector, useDispatch } from "react-redux";
 
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -30,47 +32,26 @@ type EventType = React.KeyboardEvent<HTMLInputElement> &
   React.ChangeEvent<HTMLInputElement>;
 
 const Board: React.FC = () => {
-  const cards = useSelector(cardSelector); // naming
+  const cards = useSelector(cardSelector);
   const dispatch = useDispatch();
 
   // drag and drop
   const onDragEnd = (result: any, cards: any) => {
-    console.log("cards", cards);
-
-    if (!result.destination) return console.log("back"); // Возврат элемента назад, если вышел за рамки.
+    if (!result.destination) return; // Возврат элемента назад, если вышел за рамки.
     const { source, destination } = result;
 
     if (source.droppableId !== destination.droppableId) {
       // Перекидывание таска между карточками.
-      const sourceCard = cards.find(
-        (item: any) => item.idForm === source.droppableId
-      );
-      const destCard = cards.find(
-        (item: any) => item.idForm === destination.droppableId
-      );
-      const sourceTask = [...sourceCard.task];
-      const destTask = [...destCard.task];
-      const [removed] = sourceTask.splice(source.index, 1);
-      destTask.splice(destination.index, 0, removed);
-
-      const changeTasks = cards.map((item: any) => {
-        destTask.find((item: any) => item.task === destination.task);
-
-        return item;
-      });
-      changeTasks();
+      dispatch(changeOutsideTaskPosition({ cards, source, destination }));
     } else {
-      dispatch(changeInsideTaskPosition({ cards: cards, source, destination }));
+      dispatch(changeInsideTaskPosition({ cards, source, destination }));
     }
   };
-
-  //
 
   const createCard = async (e: EventType) => {
     let cardTitle = e.target.value;
     let btnChecker = e.key;
     if (btnChecker === "Enter" && cardTitle !== "") {
-      console.log("cards", cards);
       let idForm, idInput, task;
       dispatch(createCards({ cards, cardTitle, idForm, idInput, task }));
       e.target.value = "";
@@ -78,21 +59,11 @@ const Board: React.FC = () => {
   };
 
   const createTask = (e: EventType, id: string | number) => {
-    const newTask = e.target.value;
-    console.log("id", id);
+    const titleTaskInput = e.target.value;
 
-    if (e.key === "Enter" && newTask !== "") {
-      dispatch(сreateTaskInsideCard({ newTask, id }));
-
-      /* setCards(
-        cards.map((item:any) => {
-          if (item.idForm === id) {
-            item.task.push({ titleTask: newTask, id: uuidv4() });
-            e.target.value = "";
-          }
-          return item;
-        })
-      ); */
+    if (e.key === "Enter" && titleTaskInput !== "") {
+      dispatch(сreateTaskInsideCard({ cards, titleTaskInput, id }));
+      e.target.value = "";
     }
   };
 
