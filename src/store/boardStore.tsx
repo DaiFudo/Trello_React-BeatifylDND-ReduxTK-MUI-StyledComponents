@@ -15,17 +15,7 @@ type TTypes = {
 export const slice = createSlice({
   name: "card",
   initialState: {
-    cards: [
-      {
-        title: "12",
-        idForm: "44",
-        idInput: "66",
-        task: [
-          { titleTask: "77", id: "9" },
-          { titleTask: "123", id: "1119" },
-        ],
-      },
-    ],
+    cards: [],
   },
   reducers: {
     // Логика Drag and Drop :3
@@ -61,59 +51,27 @@ export const slice = createSlice({
       const destCard = actionPayload.cards.find(
         (item: any) => item.idForm === actionPayload.destination.droppableId
       );
-
-      const sourceTask = [...sourceCard.task];
       const destTask = [...destCard.task];
-
+      const sourceTask = [...sourceCard.task];
       const [removed] = sourceTask.splice(actionPayload.source.index, 1);
-      const a = {
-        ...actionPayload.cards,
-        [actionPayload.source]: {
-          ...sourceCard,
-          task: sourceTask,
-        },
-        [actionPayload.destination]: {
-          ...destCard,
-          task: destTask,
-        },
-      };
-      console.log("is a", a);
-
-      /* if ([removed] === sourceTask.splice(actionPayload.source.index, 1)) {
-        sourceTask.pop(actionPayload.source.index, 1)
-      } */
       destTask.splice(actionPayload.destination.index, 0, removed);
 
-      console.log("sourceCard", sourceCard);
-      console.log("removed", [removed]);
-      console.log("destTask", destTask);
-
-      const changeTasks = actionPayload.cards.map((item: any) => {
-        console.log(item);
-
-        /* destTask.find(
-          (item: any) => item.task === actionPayload.destination.task
-          
-        ) */
-      });
-
-      /* const sourceCard = cards.find(
-        (item: any) => item.idForm === source.droppableId
-      );
-      const destCard = cards.find(
-        (item: any) => item.idForm === destination.droppableId
-      );
-      const sourceTask = [...sourceCard.task];
-      const destTask = [...destCard.task];
-      const [removed] = sourceTask.splice(source.index, 1);
-      destTask.splice(destination.index, 0, removed);
-
-      const changeTasks = cards.map((item: any) => {
-        destTask.find((item: any) => item.task === destination.task);
-
+      const allCards = actionPayload.cards.map((item: any) => {
+        if (item === sourceCard) {
+          return {
+            ...item,
+            task: sourceTask,
+          };
+        }
+        if (item === destCard) {
+          return {
+            ...item,
+            task: destTask,
+          };
+        }
         return item;
       });
-      changeTasks(); */
+      return void (state.cards = allCards);
     },
 
     //Логика создания карточки
@@ -121,7 +79,7 @@ export const slice = createSlice({
       let actionPayload = action.payload;
 
       let id = uuidv4();
-      let createCard = [
+      let createCard: any = [
         ...actionPayload.cards,
         {
           title: actionPayload.cardTitle,
