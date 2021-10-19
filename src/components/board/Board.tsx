@@ -68,55 +68,73 @@ const Board: React.FC = () => {
   };
 
   const renderListCards = () => {
-    return cards.map((item: any) => {
+    return cards.map((item: any, index: any) => {
       return (
-        <Cards>
-          <Card key={item.idForm}>
-            <Title>{item.title}</Title>
-            <List>
-              <Droppable droppableId={item.idForm} key={item.idForm}>
-                {(provided) => {
-                  return (
-                    <div {...provided.droppableProps} ref={provided.innerRef}>
-                      {item.task.map((task: any, index: any) => {
-                        return (
-                          <Draggable
-                            key={task.id}
-                            draggableId={task.id}
-                            index={index}
-                          >
-                            {(provided) => {
-                              return (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <Item component="a">
-                                    {task.titleTask} <DeleteIcon />
-                                  </Item>
-                                </div>
-                              );
-                            }}
-                          </Draggable>
-                        );
-                      })}
-                      {provided.placeholder}
-                    </div>
-                  );
-                }}
-              </Droppable>
-            </List>
-            <InputForm
-              key={item.idInput}
-              id="filled-basic"
-              label="New task"
-              variant="filled"
-              autoComplete="off"
-              onKeyDown={(e: EventType) => createTask(e, item.idForm)}
-            />
-          </Card>
-        </Cards>
+        <Droppable droppableId={item.idForm} key={item.idForm}>
+          {(provided) => {
+            return (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                <Draggable
+                  key={item.idForm}
+                  draggableId={item.idForm}
+                  index={index}
+                >
+                  {(provided) => {
+                    return (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <Cards className="Cards">
+                          <Card className="Card" key={item.idForm}>
+                            <Title>{item.title}</Title>
+                            <List>
+                              {item.task.map((task: any, index: any) => {
+                                return (
+                                  <Draggable
+                                    key={task.id}
+                                    draggableId={task.id}
+                                    index={index}
+                                  >
+                                    {(provided) => {
+                                      return (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                        >
+                                          <Item component="a">
+                                            {task.titleTask} <DeleteIcon />
+                                          </Item>
+                                        </div>
+                                      );
+                                    }}
+                                  </Draggable>
+                                );
+                              })}
+                            </List>
+                            <InputForm
+                              key={item.idInput}
+                              id="filled-basic"
+                              label="New task"
+                              variant="filled"
+                              autoComplete="off"
+                              onKeyDown={(e: EventType) =>
+                                createTask(e, item.idForm)
+                              }
+                            />
+                          </Card>
+                        </Cards>
+                      </div>
+                    );
+                  }}
+                </Draggable>
+                {provided.placeholder}
+              </div>
+            );
+          }}
+        </Droppable>
       );
     });
   };
