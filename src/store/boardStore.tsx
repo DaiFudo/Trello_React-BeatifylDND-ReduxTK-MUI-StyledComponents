@@ -4,6 +4,7 @@ interface ICard {
   title: string;
   idForm: string;
   idInput: string;
+  taskListId: string;
   task: { titleTask: string; id: string }[];
 }
 type TTypes = {
@@ -42,15 +43,17 @@ export const slice = createSlice({
     },
     // changeOutsideTaskPosition - Логика отвечающая за перекидывание таска во всех карточках.
     changeOutsideTaskPosition: (state, action) => {
-      console.log("hi");
+      console.log("hi", "changeOutsideTaskPosition");
+      //if( )
       const actionPayload = action.payload;
-
+      console.log("state", state.cards);
       const sourceCard = actionPayload.cards.find(
         (item: any) => item.idForm === actionPayload.source.droppableId
       );
       const destCard = actionPayload.cards.find(
         (item: any) => item.idForm === actionPayload.destination.droppableId
       );
+
       const destTask = [...destCard.task];
       const sourceTask = [...sourceCard.task];
       const [removed] = sourceTask.splice(actionPayload.source.index, 1);
@@ -64,6 +67,8 @@ export const slice = createSlice({
           };
         }
         if (item === destCard) {
+          console.log(destCard);
+
           return {
             ...item,
             task: destTask,
@@ -79,12 +84,15 @@ export const slice = createSlice({
       let actionPayload = action.payload;
 
       let id = uuidv4();
+      let idTaskList = uuidv4();
+
       let createCard: any = [
         ...actionPayload.cards,
         {
           title: actionPayload.cardTitle,
           idForm: id,
           idInput: id,
+          taskListId: idTaskList,
           task: [],
         },
       ];
