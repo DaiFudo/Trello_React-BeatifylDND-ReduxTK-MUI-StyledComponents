@@ -37,7 +37,9 @@ const Board: React.FC = () => {
   const onDragEnd = (result: any, cards: any) => {
     if (!result.destination) return; // Возврат элемента назад, если вышел за рамки.
     const { source, destination } = result;
-
+    console.log("source from Board", source.droppableId);
+    console.log("destination from Board", destination.droppableId);
+    // можно сделать проверку по тексту на таск или группу var str = a.slice(0,5);
     if (source.droppableId !== destination.droppableId) {
       // Перекидывание таска между карточками.
       dispatch(changeOutsideTaskPosition({ cards, source, destination }));
@@ -67,10 +69,12 @@ const Board: React.FC = () => {
 
   const renderListCards = () => {
     return cards.map((item: any, indexCard: any) => {
+      console.log(item.task.id);
+
       return (
         <Droppable
           direction="horizontal"
-          droppableId={item.idForm}
+          droppableId={`Group-${item.idForm}`}
           key={item.idForm}
         >
           {(provided) => {
@@ -78,7 +82,7 @@ const Board: React.FC = () => {
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 <Draggable
                   key={item.idForm}
-                  draggableId={item.idForm}
+                  draggableId={`Group-${item.idForm}`}
                   index={indexCard}
                 >
                   {(provided) => {
@@ -91,50 +95,49 @@ const Board: React.FC = () => {
                         <Cards className="Cards">
                           <Card className="Card" key={item.idForm}>
                             <Title>{item.title}</Title>
-                            <Droppable
-                              droppableId={item.taskListId}
-                              key={item.taskListId}
-                            >
-                              {(provided) => {
-                                console.log("test", item);
+
+                            <List key={item.task}>
+                              {item.task.map((task: any, indexTask: any) => {
                                 return (
-                                  <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
+                                  <Droppable
+                                    droppableId={`Tasks-${task.id}`}
+                                    key={task.id}
                                   >
-                                    <List>
-                                      {item.task.map(
-                                        (task: any, indexTask: any) => {
-                                          return (
-                                            <Draggable
-                                              key={task.id}
-                                              draggableId={task.id}
-                                              index={indexTask}
-                                            >
-                                              {(provided) => {
-                                                return (
-                                                  <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                  >
-                                                    <Item component="a">
-                                                      {task.titleTask}
-                                                      <DeleteIcon />
-                                                    </Item>
-                                                  </div>
-                                                );
-                                              }}
-                                            </Draggable>
-                                          );
-                                        }
-                                      )}
-                                    </List>
-                                    {provided.placeholder}
-                                  </div>
+                                    {(provided) => {
+                                      return (
+                                        <div
+                                          {...provided.droppableProps}
+                                          ref={provided.innerRef}
+                                        >
+                                          <Draggable
+                                            key={task.id}
+                                            draggableId={`Tasks-${task.id}`}
+                                            index={indexTask}
+                                          >
+                                            {(provided) => {
+                                              return (
+                                                <div
+                                                  ref={provided.innerRef}
+                                                  {...provided.draggableProps}
+                                                  {...provided.dragHandleProps}
+                                                >
+                                                  <Item component="a">
+                                                    {task.titleTask}
+                                                    <DeleteIcon />
+                                                  </Item>
+                                                </div>
+                                              );
+                                            }}
+                                          </Draggable>
+                                          {provided.placeholder}
+                                        </div>
+                                      );
+                                    }}
+                                  </Droppable>
                                 );
-                              }}
-                            </Droppable>
+                              })}
+                            </List>
+
                             <InputForm
                               key={item.idInput}
                               id="filled-basic"

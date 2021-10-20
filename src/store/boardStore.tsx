@@ -46,7 +46,6 @@ export const slice = createSlice({
       console.log("hi", "changeOutsideTaskPosition");
       //if( )
       const actionPayload = action.payload;
-      console.log("state", state.cards);
       const sourceCard = actionPayload.cards.find(
         (item: any) => item.idForm === actionPayload.source.droppableId
       );
@@ -54,7 +53,10 @@ export const slice = createSlice({
         (item: any) => item.idForm === actionPayload.destination.droppableId
       );
 
+      console.log("destCard", destCard);
+
       const destTask = [...destCard.task];
+      console.log("destTask", destTask);
       const sourceTask = [...sourceCard.task];
       const [removed] = sourceTask.splice(actionPayload.source.index, 1);
       destTask.splice(actionPayload.destination.index, 0, removed);
@@ -67,8 +69,6 @@ export const slice = createSlice({
           };
         }
         if (item === destCard) {
-          console.log(destCard);
-
           return {
             ...item,
             task: destTask,
@@ -92,8 +92,8 @@ export const slice = createSlice({
           title: actionPayload.cardTitle,
           idForm: id,
           idInput: id,
-          taskListId: idTaskList,
           task: [],
+          idTaskList,
         },
       ];
       return void (state.cards = createCard);
