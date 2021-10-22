@@ -1,6 +1,7 @@
 import React from "react";
 
 import {
+  changeCardsPosition,
   changeOutsideTaskPosition,
   changeInsideTaskPosition,
   сreateTaskInsideCard,
@@ -10,7 +11,15 @@ import {
 
 import { useSelector, useDispatch } from "react-redux";
 
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+  ResponderProvided,
+} from "react-beautiful-dnd";
+
+import { v4 as uuidv4 } from "uuid";
 
 import Container from "../UI/Container/Container";
 import {
@@ -24,8 +33,8 @@ import {
   Title,
   Item,
   DeleteIcon,
+  DndDiv,
 } from "./style";
-
 type EventType = React.KeyboardEvent<HTMLInputElement> &
   React.ChangeEvent<HTMLInputElement>;
 
@@ -34,12 +43,16 @@ const Board: React.FC = () => {
   const dispatch = useDispatch();
 
   // drag and drop
-  const onDragEnd = (result: any, cards: any) => {
+  const onDragEnd = (result: DropResult, cards: ResponderProvided) => {
     if (!result.destination) return; // Возврат элемента назад, если вышел за рамки.
     const { source, destination } = result;
-    console.log("source from Board", source.droppableId);
-    console.log("destination from Board", destination.droppableId);
-    // можно сделать проверку по тексту на таск или группу var str = a.slice(0,5);
+
+    if (source.droppableId && destination.droppableId === "Groups") {
+      console.log("source.index", source.index);
+      console.log("destination.index", destination.index);
+
+      dispatch(changeCardsPosition({ cards, source, destination })); // тут продолжить за Кирилло
+    }
     if (source.droppableId !== destination.droppableId) {
       // Перекидывание таска между карточками.
       dispatch(changeOutsideTaskPosition({ cards, source, destination }));
@@ -68,118 +81,115 @@ const Board: React.FC = () => {
   };
 
   const renderListCards = () => {
-    return cards.map((item: any, indexCard: any) => {
-      console.log(item.task.id);
+    return (
+      <Droppable direction="horizontal" droppableId={`Groups`} type="COLUMN">
+        {(provided) => {
+          return (
+            <DndDiv {...provided.droppableProps} ref={provided.innerRef}>
+              {cards.map((item: any, indexCard: number) => {
+                // оьбратить внимание на  index by Diana
+                return (
+                  <Draggable
+                    key={item.idForm}
+                    draggableId={`Groups-${item.idForm}`}
+                    index={indexCard}
+                  >
+                    {(provided) => {
+                      return (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <Cards className="Cards">
+                            <Card className="Card" key={item.idForm}>
+                              <Title>{item.title}</Title>
+                              <List>
+                                <Droppable
+                                  direction="vertical"
+                                  droppableId={item.idForm}
+                                >
+                                  {(provided) => (
+                                    <div
+                                      {...provided.droppableProps}
+                                      ref={provided.innerRef}
+                                    >
+                                      {item.task.map(
+                                        (task: any, indexTask: number) => {
+                                          return (
+                                            <Draggable
+                                              key={task.id}
+                                              draggableId={`Tasks-${task.id}`}
+                                              index={indexTask}
+                                            >
+                                              {(provided) => {
+                                                return (
+                                                  <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                  >
+                                                    <Item component="a">
+                                                      {task.titleTask}
+                                                      <DeleteIcon />
+                                                    </Item>
+                                                  </div>
+                                                );
+                                              }}
+                                            </Draggable>
+                                          );
+                                        }
+                                      )}
+                                      {provided.placeholder}
+                                    </div>
+                                  )}
+                                </Droppable>
+                              </List>
 
-      return (
-        <Droppable
-          direction="horizontal"
-          droppableId={`Group-${item.idForm}`}
-          key={item.idForm}
-        >
-          {(provided) => {
-            return (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                <Draggable
-                  key={item.idForm}
-                  draggableId={`Group-${item.idForm}`}
-                  index={indexCard}
-                >
-                  {(provided) => {
-                    return (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <Cards className="Cards">
-                          <Card className="Card" key={item.idForm}>
-                            <Title>{item.title}</Title>
-
-                            <List key={item.task}>
-                              {item.task.map((task: any, indexTask: any) => {
-                                return (
-                                  <Droppable
-                                    droppableId={`Tasks-${task.id}`}
-                                    key={task.id}
-                                  >
-                                    {(provided) => {
-                                      return (
-                                        <div
-                                          {...provided.droppableProps}
-                                          ref={provided.innerRef}
-                                        >
-                                          <Draggable
-                                            key={task.id}
-                                            draggableId={`Tasks-${task.id}`}
-                                            index={indexTask}
-                                          >
-                                            {(provided) => {
-                                              return (
-                                                <div
-                                                  ref={provided.innerRef}
-                                                  {...provided.draggableProps}
-                                                  {...provided.dragHandleProps}
-                                                >
-                                                  <Item component="a">
-                                                    {task.titleTask}
-                                                    <DeleteIcon />
-                                                  </Item>
-                                                </div>
-                                              );
-                                            }}
-                                          </Draggable>
-                                          {provided.placeholder}
-                                        </div>
-                                      );
-                                    }}
-                                  </Droppable>
-                                );
-                              })}
-                            </List>
-
-                            <InputForm
-                              key={item.idInput}
-                              id="filled-basic"
-                              label="New task"
-                              variant="filled"
-                              autoComplete="off"
-                              onKeyDown={(e: EventType) =>
-                                createTask(e, item.idForm)
-                              }
-                            />
-                          </Card>
-                        </Cards>
-                      </div>
-                    );
-                  }}
-                </Draggable>
-                {provided.placeholder}
-              </div>
-            );
-          }}
-        </Droppable>
-      );
-    });
+                              <InputForm
+                                key={item.idInput}
+                                id="filled-basic"
+                                label="New task"
+                                variant="filled"
+                                autoComplete="off"
+                                onKeyDown={(e: EventType) =>
+                                  createTask(e, item.idForm)
+                                }
+                              />
+                            </Card>
+                          </Cards>
+                        </div>
+                      );
+                    }}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </DndDiv>
+          );
+        }}
+      </Droppable>
+    );
   };
 
   return (
     <Container>
       <Wrapper>
-        <DragDropContext onDragEnd={(result) => onDragEnd(result, cards)}>
-          <Cards>
+        <Cards className="Cards">
+          <DragDropContext onDragEnd={(result) => onDragEnd(result, cards)}>
             {renderListCards()}
-            <AddCard>
-              <List>
-                <TextAddCard>Add Card</TextAddCard>
-              </List>
-              <InputForm
-                autoComplete="off"
-                onKeyDown={(e: EventType) => createCard(e)}
-              />
-            </AddCard>
-          </Cards>
-        </DragDropContext>
+          </DragDropContext>
+
+          <AddCard>
+            <List>
+              <TextAddCard>Add Card</TextAddCard>
+            </List>
+            <InputForm
+              autoComplete="off"
+              onKeyDown={(e: EventType) => createCard(e)}
+            />
+          </AddCard>
+        </Cards>
       </Wrapper>
     </Container>
   );

@@ -29,6 +29,10 @@ export const Cards = styled(Box)({
   display: "flex",
   alignItems: "flex-start",
   marginBottom: "100px",
+  div: {
+    display: "flex",
+    alignItems: "flex-start",
+  },
 });
 export const List = styled(Box)({
   display: "flex",
@@ -105,4 +109,15 @@ export const TextAddCard = styled(Box)({
 });
 export const DeleteIcon = styled(Delete)({
   fontSize: "20px",
+});
+
+// Dnd-Div
+
+// @ts-ignore
+/* export const DndDiv = styled.div`
+  display: flex;
+`; */
+
+export const DndDiv = styled("div")({
+  display: "flex",
 });

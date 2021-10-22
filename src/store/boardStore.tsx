@@ -20,6 +20,36 @@ export const slice = createSlice({
   },
   reducers: {
     // Логика Drag and Drop :3
+
+    // changeCardsPosition - Логика отвечающая за смену позиции конкретной карточки.
+    changeCardsPosition: (state, action) => {
+      console.log("hi");
+      const actionPayload = action.payload;
+
+      const sourceCard = actionPayload.source.index;
+      const destCard = actionPayload.destination.index;
+
+      console.log(sourceCard);
+      console.log(destCard);
+      const changePositionCard = actionPayload.cards.map(
+        (item: any, index: number) => {
+          if (index === sourceCard) {
+            return sourceCard.splice(
+              actionPayload.destination.index,
+              0,
+              removed
+            );
+          }
+          if (index === destCard) {
+            return { ...item };
+          }
+          return { ...item };
+        }
+      );
+      console.log("changePositionCard", changePositionCard);
+      return void (state.cards = changePositionCard);
+    },
+
     // changeInsideTaskPosition - Логика отвечающая за смену таска в пределах одной карточки.
     changeInsideTaskPosition: (state, action: PayloadAction<TTypes>) => {
       const actionPayload = action.payload;
@@ -46,22 +76,25 @@ export const slice = createSlice({
       console.log("hi", "changeOutsideTaskPosition");
       //if( )
       const actionPayload = action.payload;
-      const sourceCard = actionPayload.cards.find(
+      const sourceCard = state.cards.find(
         (item: any) => item.idForm === actionPayload.source.droppableId
-      );
-      const destCard = actionPayload.cards.find(
+      )!;
+      const destCard = state.cards.find(
         (item: any) => item.idForm === actionPayload.destination.droppableId
-      );
+      )!;
 
-      console.log("destCard", destCard);
+      console.log("destCard", destCard, actionPayload.destination);
 
+      // @ts-ignore
       const destTask = [...destCard.task];
       console.log("destTask", destTask);
+      // @ts-ignore
       const sourceTask = [...sourceCard.task];
       const [removed] = sourceTask.splice(actionPayload.source.index, 1);
+      console.log(sourceTask);
       destTask.splice(actionPayload.destination.index, 0, removed);
 
-      const allCards = actionPayload.cards.map((item: any) => {
+      const allCards = state.cards.map((item: any) => {
         if (item === sourceCard) {
           return {
             ...item,
@@ -76,7 +109,7 @@ export const slice = createSlice({
         }
         return item;
       });
-      return void (state.cards = allCards);
+      return void (state.cards = allCards as any);
     },
 
     //Логика создания карточки
@@ -124,6 +157,7 @@ export const {
   сreateTaskInsideCard,
   changeInsideTaskPosition,
   changeOutsideTaskPosition,
+  changeCardsPosition,
 } = slice.actions;
 
 export const cardSelector = (state: any) => state.board.cards;
