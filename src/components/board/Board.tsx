@@ -48,16 +48,17 @@ const Board: React.FC = () => {
     const { source, destination } = result;
 
     if (source.droppableId && destination.droppableId === "Groups") {
-      console.log("source.index", source.index);
-      console.log("destination.index", destination.index);
-
       dispatch(changeCardsPosition({ cards, source, destination })); // тут продолжить за Кирилло
+
+      return;
     }
     if (source.droppableId !== destination.droppableId) {
-      // Перекидывание таска между карточками.
       dispatch(changeOutsideTaskPosition({ cards, source, destination }));
-    } else {
+      return;
+    }
+    if (source.droppableId === destination.droppableId) {
       dispatch(changeInsideTaskPosition({ cards, source, destination }));
+      return;
     }
   };
 

@@ -26,27 +26,34 @@ export const slice = createSlice({
       console.log("hi");
       const actionPayload = action.payload;
 
-      const sourceCard = actionPayload.source.index;
-      const destCard = actionPayload.destination.index;
+      let sourceCardSupport = actionPayload.source.index;
+      let destCardSupport = actionPayload.destination.index;
+      const sourceCard = actionPayload.cards.find(
+        (item: any, index: any) => index === sourceCardSupport
+      );
+      const destCard = actionPayload.cards.find(
+        (item: any, index: any) => index === destCardSupport
+      );
 
-      console.log(sourceCard);
-      console.log(destCard);
       const changePositionCard = actionPayload.cards.map(
         (item: any, index: number) => {
-          if (index === sourceCard) {
-            return sourceCard.splice(
-              actionPayload.destination.index,
-              0,
-              removed
-            );
+          if (item === sourceCard) {
+            return {
+              ...item,
+              ...destCard,
+            };
           }
-          if (index === destCard) {
-            return { ...item };
+          if (item === destCard) {
+            return {
+              ...item,
+              ...sourceCard,
+            };
           }
-          return { ...item };
+          return item;
         }
       );
-      console.log("changePositionCard", changePositionCard);
+
+      console.log(changePositionCard);
       return void (state.cards = changePositionCard);
     },
 
@@ -72,9 +79,8 @@ export const slice = createSlice({
       return void (state.cards = mappedCards);
     },
     // changeOutsideTaskPosition - Логика отвечающая за перекидывание таска во всех карточках.
+
     changeOutsideTaskPosition: (state, action) => {
-      console.log("hi", "changeOutsideTaskPosition");
-      //if( )
       const actionPayload = action.payload;
       const sourceCard = state.cards.find(
         (item: any) => item.idForm === actionPayload.source.droppableId
@@ -83,11 +89,8 @@ export const slice = createSlice({
         (item: any) => item.idForm === actionPayload.destination.droppableId
       )!;
 
-      console.log("destCard", destCard, actionPayload.destination);
-
       // @ts-ignore
       const destTask = [...destCard.task];
-      console.log("destTask", destTask);
       // @ts-ignore
       const sourceTask = [...sourceCard.task];
       const [removed] = sourceTask.splice(actionPayload.source.index, 1);
@@ -150,6 +153,8 @@ export const slice = createSlice({
       });
       return void (state.cards = mappedCards);
     },
+
+    //Удаление элементов:
   },
 });
 export const {
