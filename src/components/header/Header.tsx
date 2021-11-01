@@ -5,7 +5,7 @@ import { Container, Title } from "./styles";
 const Header: React.FC = () => {
   return (
     <Container>
-      <Title>Drop & Place</Title>
+      <Title>Drag & Drop</Title>
     </Container>
   );
 };

@@ -1,11 +1,11 @@
 import { Box, styled, TextField, FormControl } from "@material-ui/core";
 import Delete from "@material-ui/icons/Delete";
-
+import CloseIcon from "@material-ui/icons/Close";
 export const Wrapper = styled(Box)({
   margin: "10px",
   minHeight: "6%",
   minWidth: "6%",
-  maxWidth: "45%",
+  maxWidth: "99%",
   display: "flex",
   flexDirection: "row",
   flexWrap: "wrap",
@@ -33,6 +33,11 @@ export const Cards = styled(Box)({
     display: "flex",
     alignItems: "flex-start",
   },
+});
+export const HeaderCard = styled("div")({
+  display: "flex",
+  justifyContent: "space-between",
+  width: "75%",
 });
 export const List = styled(Box)({
   display: "flex",
@@ -110,6 +115,13 @@ export const TextAddCard = styled(Box)({
 export const DeleteIcon = styled(Delete)({
   fontSize: "20px",
 });
+export const CloseBtn = styled(CloseIcon)({
+  fontSize: "28px",
+  "&:hover": {
+    cursor: "pointer",
+  },
+  //zIndex: "2",
+});
 
 // Dnd-Div
 
@@ -120,4 +132,5 @@ export const DeleteIcon = styled(Delete)({
 
 export const DndDiv = styled("div")({
   display: "flex",
+  flexWrap: "wrap",
 });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 
 import {
   changeCardsPosition,
@@ -7,6 +7,9 @@ import {
   сreateTaskInsideCard,
   cardSelector,
   createCards,
+  deleteTaskInsideCard,
+  deleteTargetCard,
+  ICard,
 } from "../../store/boardStore";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -19,9 +22,8 @@ import {
   ResponderProvided,
 } from "react-beautiful-dnd";
 
-import { v4 as uuidv4 } from "uuid";
-
 import Container from "../UI/Container/Container";
+
 import {
   List,
   Wrapper,
@@ -34,7 +36,10 @@ import {
   Item,
   DeleteIcon,
   DndDiv,
+  CloseBtn,
+  HeaderCard,
 } from "./style";
+
 type EventType = React.KeyboardEvent<HTMLInputElement> &
   React.ChangeEvent<HTMLInputElement>;
 
@@ -44,12 +49,11 @@ const Board: React.FC = () => {
 
   // drag and drop
   const onDragEnd = (result: DropResult, cards: ResponderProvided) => {
-    if (!result.destination) return; // Возврат элемента назад, если вышел за рамки.
+    if (!result.destination) return;
     const { source, destination } = result;
 
     if (source.droppableId && destination.droppableId === "Groups") {
-      dispatch(changeCardsPosition({ cards, source, destination })); // тут продолжить за Кирилло
-
+      dispatch(changeCardsPosition({ cards, source, destination }));
       return;
     }
     if (source.droppableId !== destination.droppableId) {
@@ -62,7 +66,7 @@ const Board: React.FC = () => {
     }
   };
 
-  const createCard = async (e: EventType) => {
+  const createCard = (e: EventType) => {
     let cardTitle = e.target.value;
     let btnChecker = e.key;
     if (btnChecker === "Enter" && cardTitle !== "") {
@@ -71,14 +75,25 @@ const Board: React.FC = () => {
       e.target.value = "";
     }
   };
+  const deleteCard = (event: MouseEvent, idForm: string) => {
+    dispatch(deleteTargetCard({ idForm }));
+  };
 
-  const createTask = (e: EventType, id: string | number) => {
-    const titleTaskInput = e.target.value;
+  const createTask = (event: EventType, id: string) => {
+    const titleTaskInput = event.target.value;
 
-    if (e.key === "Enter" && titleTaskInput !== "") {
+    if (event.key === "Enter" && titleTaskInput !== "") {
       dispatch(сreateTaskInsideCard({ cards, titleTaskInput, id }));
-      e.target.value = "";
+      event.target.value = "";
     }
+  };
+  const deleteTask = (
+    event: MouseEvent,
+    id: string,
+    cardId: string,
+    indexTask: number
+  ) => {
+    dispatch(deleteTaskInsideCard({ cards, id, cardId, indexTask }));
   };
 
   const renderListCards = () => {
@@ -87,8 +102,7 @@ const Board: React.FC = () => {
         {(provided) => {
           return (
             <DndDiv {...provided.droppableProps} ref={provided.innerRef}>
-              {cards.map((item: any, indexCard: number) => {
-                // оьбратить внимание на  index by Diana
+              {cards.map((item: ICard, indexCard: number) => {
                 return (
                   <Draggable
                     key={item.idForm}
@@ -104,7 +118,15 @@ const Board: React.FC = () => {
                         >
                           <Cards className="Cards">
                             <Card className="Card" key={item.idForm}>
-                              <Title>{item.title}</Title>
+                              <HeaderCard>
+                                <Title>{item.title}</Title>
+                                <CloseBtn
+                                  onClick={(event) =>
+                                    deleteCard(event, item.idForm)
+                                  }
+                                />
+                              </HeaderCard>
+
                               <List>
                                 <Droppable
                                   direction="vertical"
@@ -132,7 +154,16 @@ const Board: React.FC = () => {
                                                   >
                                                     <Item component="a">
                                                       {task.titleTask}
-                                                      <DeleteIcon />
+                                                      <DeleteIcon
+                                                        onClick={(event) =>
+                                                          deleteTask(
+                                                            event,
+                                                            task.id,
+                                                            item.idForm,
+                                                            indexTask
+                                                          )
+                                                        }
+                                                      />
                                                     </Item>
                                                   </div>
                                                 );
@@ -180,7 +211,6 @@ const Board: React.FC = () => {
           <DragDropContext onDragEnd={(result) => onDragEnd(result, cards)}>
             {renderListCards()}
           </DragDropContext>
-
           <AddCard>
             <List>
               <TextAddCard>Add Card</TextAddCard>
