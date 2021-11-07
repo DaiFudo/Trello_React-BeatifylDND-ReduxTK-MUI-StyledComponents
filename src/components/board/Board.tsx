@@ -49,50 +49,46 @@ const Board: React.FC = () => {
 
   // drag and drop
   const onDragEnd = (result: DropResult, cards: ResponderProvided) => {
-    if (!result.destination) return;
+    if (!result.destination) {
+      return;
+    }
+
     const { source, destination } = result;
 
     if (source.droppableId && destination.droppableId === "Groups") {
       dispatch(changeCardsPosition({ cards, source, destination }));
+      console.log("wtf?");
+
       return;
     }
     if (source.droppableId !== destination.droppableId) {
       dispatch(changeOutsideTaskPosition({ cards, source, destination }));
       return;
     }
-    if (source.droppableId === destination.droppableId) {
-      dispatch(changeInsideTaskPosition({ cards, source, destination }));
-      return;
-    }
+    dispatch(changeInsideTaskPosition({ cards, source, destination }));
   };
 
-  const createCard = (e: EventType) => {
-    let cardTitle = e.target.value;
-    let btnChecker = e.key;
+  const createCard = (event: EventType) => {
+    let cardTitle = event.target.value;
+    let btnChecker = event.key;
     if (btnChecker === "Enter" && cardTitle !== "") {
-      let idForm, idInput, task;
-      dispatch(createCards({ cards, cardTitle, idForm, idInput, task }));
-      e.target.value = "";
+      dispatch(createCards({ cards, cardTitle }));
+      event.target.value = "";
     }
   };
-  const deleteCard = (event: MouseEvent, idForm: string) => {
+  const deleteCard = (idForm: string) => {
     dispatch(deleteTargetCard({ idForm }));
   };
 
   const createTask = (event: EventType, id: string) => {
-    const titleTaskInput = event.target.value;
+    const titleTask = event.target.value;
 
-    if (event.key === "Enter" && titleTaskInput !== "") {
-      dispatch(сreateTaskInsideCard({ cards, titleTaskInput, id }));
+    if (event.key === "Enter" && titleTask !== "") {
+      dispatch(сreateTaskInsideCard({ cards, titleTask, id }));
       event.target.value = "";
     }
   };
-  const deleteTask = (
-    event: MouseEvent,
-    id: string,
-    cardId: string,
-    indexTask: number
-  ) => {
+  const deleteTask = (id: string, cardId: string, indexTask: number) => {
     dispatch(deleteTaskInsideCard({ cards, id, cardId, indexTask }));
   };
 
@@ -116,14 +112,12 @@ const Board: React.FC = () => {
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                         >
-                          <Cards className="Cards">
-                            <Card className="Card" key={item.idForm}>
+                          <Cards>
+                            <Card>
                               <HeaderCard>
                                 <Title>{item.title}</Title>
                                 <CloseBtn
-                                  onClick={(event) =>
-                                    deleteCard(event, item.idForm)
-                                  }
+                                  onClick={() => deleteCard(item.idForm)}
                                 />
                               </HeaderCard>
 
@@ -155,9 +149,8 @@ const Board: React.FC = () => {
                                                     <Item component="a">
                                                       {task.titleTask}
                                                       <DeleteIcon
-                                                        onClick={(event) =>
+                                                        onClick={() =>
                                                           deleteTask(
-                                                            event,
                                                             task.id,
                                                             item.idForm,
                                                             indexTask
@@ -177,15 +170,13 @@ const Board: React.FC = () => {
                                   )}
                                 </Droppable>
                               </List>
-
                               <InputForm
-                                key={item.idInput}
                                 id="filled-basic"
                                 label="New task"
                                 variant="filled"
                                 autoComplete="off"
-                                onKeyDown={(e: EventType) =>
-                                  createTask(e, item.idForm)
+                                onKeyDown={(event: EventType) =>
+                                  createTask(event, item.idForm)
                                 }
                               />
                             </Card>
@@ -207,7 +198,7 @@ const Board: React.FC = () => {
   return (
     <Container>
       <Wrapper>
-        <Cards className="Cards">
+        <Cards>
           <DragDropContext onDragEnd={(result) => onDragEnd(result, cards)}>
             {renderListCards()}
           </DragDropContext>
@@ -217,7 +208,7 @@ const Board: React.FC = () => {
             </List>
             <InputForm
               autoComplete="off"
-              onKeyDown={(e: EventType) => createCard(e)}
+              onKeyDown={(event: EventType) => createCard(event)}
             />
           </AddCard>
         </Cards>

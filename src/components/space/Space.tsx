@@ -23,7 +23,7 @@ interface Cards {
 const Space: React.FC<Cards> = () => {
   const [title, setTitle] = useState<string>(""); // Почему у меня тут новый тайтл я же его удалил
   const [space, setSpace] = useState<{ title: string; id: string }[]>([]);
-
+ //например лист boards
   const history = useHistory();
 
   const handleKeyDownInput = async (e: any) => {

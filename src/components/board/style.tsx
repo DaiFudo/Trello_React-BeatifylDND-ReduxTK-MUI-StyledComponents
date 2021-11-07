@@ -1,6 +1,8 @@
 import { Box, styled, TextField, FormControl } from "@material-ui/core";
+
 import Delete from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
+
 export const Wrapper = styled(Box)({
   margin: "10px",
   minHeight: "6%",
@@ -53,7 +55,7 @@ export const List = styled(Box)({
 });
 export const Item = styled(Box)({
   padding: "5px",
-  margin: "10px 5px 10px 5px",
+  margin: "10px  5px",
   transition: "all 1s ease",
   width: "85%",
   minHeight: "20px",
@@ -98,7 +100,6 @@ export const AddCard = styled(Box)({
   "&:hover": {
     cursor: "pointer",
     transition: "all 1s ease",
-    content: "+",
     background:
       "rgb(60,235,237) linear-gradient(214deg, rgba(60,235,237,1) 24%, rgba(41,249,180,1) 93%)",
   },

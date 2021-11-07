@@ -4,10 +4,10 @@ import { Switch, BrowserRouter as Router, Route } from "react-router-dom";
 
 import MainSpace from "../../views/MainSpace";
 import WorkBoard from "../../views/WorkBoard";
-
+// перенести в src
 const App: React.FC = () => {
   return (
-    <div className="App">
+    <div>
       <Router>
         <Switch>
           <Route path="/" component={MainSpace} exact />

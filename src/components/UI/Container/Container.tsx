@@ -3,7 +3,7 @@ import React from "react";
 import { Box, styled } from "@material-ui/core";
 
 const Container = styled("div")({
-  height: "1920px",
+  height: "100vh",
   width: "100%",
   display: "flex",
   flexWrap: "wrap",

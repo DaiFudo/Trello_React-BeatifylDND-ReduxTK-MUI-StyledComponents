@@ -1,15 +1,20 @@
 import { createSlice, PayloadAction, current } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 export interface ICard {
+  task: any;
   title: string;
-  idForm: string;
-  idInput: string;
+  id: string;
   taskListId: string;
-  task: { titleTask: string; id: string }[];
 }
-interface IItem {
+interface ITask {
+  title: string;
+  id: string;
+}
+interface IMapItem {
+  // изменить на mapitems
   item: string;
   idForm: string;
+  task: [];
 }
 
 export const slice = createSlice({
@@ -23,33 +28,31 @@ export const slice = createSlice({
     // changeCardsPosition - Логика отвечающая за смену позиции конкретной карточки.
     changeCardsPosition: (state, action) => {
       const actionPayload = action.payload;
-
-      let sourceCardSupport = actionPayload.source.index;
+      let allCards: any = [...current(state.cards)];
+      let sourceCardSupport = actionPayload.source.index; // handler а не support.
       let destCardSupport = actionPayload.destination.index;
-      const sourceCard = actionPayload.cards.find(
-        (item: IItem, index: number) => index === sourceCardSupport
+      const sourceCard = allCards.find(
+        (index: number) => index === sourceCardSupport
       );
-      const destCard = actionPayload.cards.find(
-        (item: IItem, index: number) => index === destCardSupport
+      const destCard = allCards.find(
+        (index: number) => index === destCardSupport
       );
 
-      const changePositionCard = actionPayload.cards.map(
-        (item: IItem, index: number) => {
-          if (item === sourceCard) {
-            return {
-              ...item,
-              ...destCard,
-            };
-          }
-          if (item === destCard) {
-            return {
-              ...item,
-              ...sourceCard,
-            };
-          }
-          return item;
+      const changePositionCard = allCards.map((item: IMapItem) => {
+        if (item === sourceCard) {
+          return {
+            ...item,
+            ...destCard,
+          };
         }
-      );
+        if (item === destCard) {
+          return {
+            ...item,
+            ...sourceCard,
+          };
+        }
+        return item;
+      });
 
       return void (state.cards = changePositionCard);
     },
@@ -57,15 +60,16 @@ export const slice = createSlice({
     // changeInsideTaskPosition - Логика отвечающая за смену таска в пределах одной карточки.
     changeInsideTaskPosition: (state, action) => {
       const actionPayload = action.payload;
-      const card = actionPayload.cards.find(
-        (item: IItem) => item.idForm === actionPayload.source.droppableId
+      let allCards: any = [...current(state.cards)];
+      const card = allCards.find(
+        (item: IMapItem) => item.idForm === actionPayload.source.droppableId
       );
 
       const copiedItems = [...card.task];
-      const [removed] = copiedItems.splice(actionPayload.source.index, 1);
+      const [removed] = copiedItems.splice(actionPayload.source.index, 1); // можно просто index[0].
       copiedItems.splice(actionPayload.destination.index, 0, removed);
       const mappedCards = actionPayload.cards.map((item: ICard) => {
-        if (item.idForm === actionPayload.source.droppableId) {
+        if (item.id === actionPayload.source.droppableId) {
           return {
             ...item,
             task: copiedItems,
@@ -79,25 +83,27 @@ export const slice = createSlice({
 
     changeOutsideTaskPosition: (state, action) => {
       const actionPayload = action.payload;
-      const sourceCard = state.cards.find(
-        (item: IItem) => item.idForm === actionPayload.source.droppableId
+      let allCards: any = [...current(state.cards)];
+      const sourceCard = allCards.find(
+        (item: IMapItem) => item.idForm === actionPayload.source.droppableId
       )!;
-      const destCard = state.cards.find(
-        (item: IItem) => item.idForm === actionPayload.destination.droppableId
+      const destCard = allCards.find(
+        (item: IMapItem) =>
+          item.idForm === actionPayload.destination.droppableId
       )!;
 
-      // @ts-ignore
       const destTask = [...destCard.task];
-      // @ts-ignore
-      const sourceTask = [...sourceCard.task];
-      const [removed] = sourceTask.splice(actionPayload.source.index, 1);
+      const sourceTasks = [...sourceCard.task];
+      const [removed] = sourceTasks.splice(actionPayload.source.index, 1);
       destTask.splice(actionPayload.destination.index, 0, removed);
 
-      const allCards = state.cards.map((item: IItem) => {
+      allCards.map((item: IMapItem) => {
+        // перебор сделать проще поиск по индексу
         if (item === sourceCard) {
+          // странная проверка
           return {
             ...item,
-            task: sourceTask,
+            task: sourceTasks,
           };
         }
         if (item === destCard) {
@@ -108,7 +114,7 @@ export const slice = createSlice({
         }
         return item;
       });
-      return void (state.cards = allCards as any);
+      return void (state.cards = allCards);
     },
 
     //Логика создания карточки
@@ -116,33 +122,29 @@ export const slice = createSlice({
       let actionPayload = action.payload;
 
       let id = uuidv4();
-      let idTaskList = uuidv4();
 
-      let createCard: any = [
+      let createCards: any = [
+        // ANY
         ...actionPayload.cards,
         {
           title: actionPayload.cardTitle,
           idForm: id,
-          idInput: id,
           task: [],
-          idTaskList,
         },
       ];
-      return void (state.cards = createCard);
+      return void (state.cards = createCards);
     },
 
     // сreateTaskInsideCard - Логика отвечающая за создание таска в карточке.
     сreateTaskInsideCard: (state, action) => {
       const actionPayload = action.payload;
       let id = uuidv4();
-      const mappedCards = actionPayload.cards.map((item: ICard) => {
-        if (item.idForm === actionPayload.id) {
+      let allCards: any = [...current(state.cards)]; // ANY
+      const mappedCards = allCards.map((item: ICard) => {
+        if (item.id === actionPayload.id) {
           return {
             ...item,
-            task: [
-              ...item.task,
-              { titleTask: actionPayload.titleTaskInput, id },
-            ],
+            task: [...item.task, { titleTask: actionPayload.titleTask, id }],
           };
         }
         return item;
@@ -155,10 +157,11 @@ export const slice = createSlice({
     deleteTaskInsideCard: (state, action) => {
       const actionPayload = action.payload;
       const idCard = actionPayload.cardId;
-      let allCards: any = [...current(state.cards)];
+      let allCards: any = [...current(state.cards)]; // ANY
       const indexTask = actionPayload.indexTask;
 
-      const a = allCards.map((item: any) => {
+      const mappedCards = allCards.map((item: IMapItem) => {
+        // any,
         if (item.idForm === idCard) {
           const allTasksTargetCard = [...item.task];
 
@@ -170,14 +173,14 @@ export const slice = createSlice({
         return item;
       });
 
-      return void (state.cards = a);
+      return void (state.cards = mappedCards);
     },
     deleteTargetCard: (state, action) => {
       const actionPayload = action.payload;
       const idDeletedCard = actionPayload.idForm;
-      let allCards: any = [...current(state.cards)];
-      allCards.map((item: any, index: number) => {
-        if (item.idForm === idDeletedCard) {
+      let allCards: any = [...current(state.cards)]; // ANY
+      allCards.map((item: ICard, index: number) => {
+        if (item.id === idDeletedCard) {
           const updateCards = allCards.splice(index, 1);
           return {
             ...item,
@@ -199,5 +202,5 @@ export const {
   deleteTargetCard,
 } = slice.actions;
 
-export const cardSelector = (state: any) => state.board.cards;
+export const cardSelector = (state: any) => state.board.cards; // ANY, это состояние хранилища стора, которое не меняется.
 export default slice.reducer;
